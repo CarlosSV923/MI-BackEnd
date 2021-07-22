@@ -14,6 +14,18 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+
+
+/* API discapacidades */
+Route::get('/mostrar_discapacidades', 'DiscapacidadController@mostrar_discapacidades');
+
+/* API medicamentos */
+Route::get('/mostrar_medicamentos', 'MedicamentoController@mostrar_medicamentos');
+
+/* API enfermedades */
+Route::get('/mostrar_enfermedades', 'EnfermedadController@mostrar_enfermedades');
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });

@@ -15,10 +15,13 @@ class Enfermedades extends Model
      *
      * @var array
      */
-    protected $fillable = [
-        'nombre', "descrip", "codigo"
-    ];
+    //protected $fillable = [
+    //    'nombre', "descrip", "codigo"
+    //];
 
+    protected $fillable = [
+        'nombreCorto', 'nombreLargo', "codigo", "descrip"
+    ];
 
     /**
      * The attributes that should be hidden for arrays.
