@@ -10,13 +10,13 @@ class Citas extends Model
     protected $table = 'citas';
     protected $primaryKey = 'id_cita';
 
-                        /**
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'fecha_agendada', "fecha_atencion", "estado", "paciente", "medico","seguimiento", "observRec", "planTratam", "procedimiento", "instrucciones", "sintomas"
+        "init_comment", "inicio_cita", "fin_cita", 'fecha_agendada', "fecha_atencion", "estado", "paciente", "medico", "seguimiento", "observRec", "planTratam", "procedimiento", "instrucciones", "sintomas"
     ];
 
 
@@ -26,10 +26,10 @@ class Citas extends Model
      * @var array
      */
     protected $hidden = [
-    	'created_at', 'updated_at'
+        'created_at', 'updated_at'
     ];
 
-    
+
     public function pacientes()
     {
         return $this->belongsTo('App\Models\Personas', 'paciente');
