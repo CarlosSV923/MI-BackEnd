@@ -16,7 +16,7 @@ class Examenes extends Model
      * @var array
      */
     protected $fillable = [
-        'url_examen', "seguimiento", "diagnostico","tipo_examen", "medico", "paciente", "comentarios"
+        'url_examen', "seguimiento", "diagnostico","tipo_examen", "medico", "paciente", "comentarios", "cita"
     ];
 
 
