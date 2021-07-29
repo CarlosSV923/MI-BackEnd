@@ -13,6 +13,16 @@ class DiscapacidadController extends Controller
         return response() -> json($discapacidades);
     }
 
+    public function almacenar_discapacidad(Request $request){
+        $discapacidad = new Discapacidades();
+        $discapacidad-> nombre = $request -> get('nombre');
+        $discapacidad->codigo = $request -> get('codigo');
+        $discapacidad-> descrip = $request -> get('descrip');
+        $discapacidad->save();
+        return response()->json($discapacidad->id_discapacidad, 200);
+
+    }
+
     public function almacenar_discapacidades(Request $request){
         $lista_discapacidades = $request -> get('discapacidades');
         //print_r($data);

@@ -12,4 +12,14 @@ class MedicamentoController extends Controller
         $medicamentos = Medicamentos::all();
         return response() -> json($medicamentos);
     }
+
+    public function almacenar_medicamento(Request $request){
+        $medicamento = new Medicamentos();
+        $medicamento-> nombre = $request -> get('nombre');
+        $medicamento->codigo = $request -> get('codigo');
+        $medicamento-> descrip = $request -> get('descrip');
+        $medicamento->save();
+        return response()->json($medicamento->id_medicamento, 200);
+
+    }
 }

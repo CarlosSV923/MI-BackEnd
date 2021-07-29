@@ -41,6 +41,7 @@ Route::post('/almacenar_cita', 'CitasController@almacenar_cita');
 /* API discapacidades */
 Route::get('/mostrar_discapacidades', 'DiscapacidadController@mostrar_discapacidades');
 Route::post('/almacenar_discapacidades', 'DiscapacidadController@almacenar_discapacidades');
+Route::post('/almacenar_discapacidad', 'DiscapacidadController@almacenar_discapacidad');
 
 /* API discapacidades pacientes */
 Route::get('/mostrar_discapacidades_pacientes', 'DiscapacidadPacienteController@mostrar_discapacidades_pacientes');
@@ -69,6 +70,7 @@ Route::post('almacenar_medicamentos_cita_paciente','MedicamentoCitaController@al
 
 /* API medicamentos */
 Route::get('/mostrar_medicamentos', 'MedicamentoController@mostrar_medicamentos');
+Route::post('almacenar_medicamento', 'MedicamentoController@almacenar_medicamento');
 
 /* API enfermedades citas */
 Route::get('/mostrar_enfermedades_cita', 'EnfermedadCitaController@mostrar_enfermedades_cita');
@@ -76,3 +78,12 @@ Route::post('/almacenar_enfermedades_cita_paciente', 'EnfermedadCitaController@a
 
 /* API enfermedades */
 Route::get('/mostrar_enfermedades', 'EnfermedadController@mostrar_enfermedades');
+Route::post('/almacenar_enfermedad', 'EnfermedadController@almacenar_enfermedad');
+
+
+/* API roles */
+Route::post('/almacenar_rol', 'RolController@almacenar_rol');
+Route::get('/mostrar_roles', 'RolController@mostrar_roles');
+
+/* API roles */
+Route::post('/almacenar_usuario', 'UsersController@almacenar_usuario');
