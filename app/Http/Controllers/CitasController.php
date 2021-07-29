@@ -105,4 +105,26 @@ class CitasController extends Controller
         ]);
         return response()->json($cita, 200);
     }
+
+    public function almacenar_cita(Request $request){
+        $cita = new Citas();
+        $cita->medico = $request->get('medico');
+        $cita->paciente = $request->get('paciente');
+        $cita->inicio_cita = $request->get('inicio_cita');
+        $cita->fin_cita = $request->get('fin_cita');
+        $cita->init_comment = $request->get('init_comment');
+        $cita->estado = $request->get('estado');
+        $cita->observRec = $request->get('observRec');
+        $cita->planTratam = $request->get('planTratam');
+        $cita->procedimiento = $request->get('procedimiento');
+        $cita->instrucciones = $request->get('instrucciones');
+        $cita->sintomas = $request->get('sintomas');
+        $cita->fecha_agendada = $request->get('fecha_agendada');
+        $cita->fecha_atencion = $request->get('fecha_atencion');
+        $cita->seguimiento = $request->get('seguimiento');
+        $cita->save();
+        return response() -> json ($cita ->id_cita);
+    }
+
+
 }

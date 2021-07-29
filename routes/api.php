@@ -35,8 +35,8 @@ Route::post('/saveImages', 'ImageUploadController@saveImages');
 Route::get('/mostrar_examenes', 'ImageUploadController@mostrar_examenes');
 
 /* API citas */
-Route::get('/mostrar_citas', 'CitaController@mostrar_citas');
-Route::post('/almacenar_cita', 'CitaController@almacenar_cita');
+Route::get('/mostrar_citas', 'CitasController@mostrar_citas');
+Route::post('/almacenar_cita', 'CitasController@almacenar_cita');
 
 /* API discapacidades */
 Route::get('/mostrar_discapacidades', 'DiscapacidadController@mostrar_discapacidades');
