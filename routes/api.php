@@ -20,6 +20,8 @@ Route::post('/getMedicosFilter', 'PersonasController@getMedicosFilter');
 
 Route::post('/agendarCita', 'CitasController@agendarCita');
 
+Route::post('/getCitasReporte', 'CitasController@getCitasReporte');
+
 Route::post('/getCitasMedico', 'CitasController@getCitasMedico');
 
 Route::post('/getCitasPaciente', 'CitasController@getCitasPaciente');
