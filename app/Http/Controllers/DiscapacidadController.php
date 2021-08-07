@@ -47,4 +47,27 @@ class DiscapacidadController extends Controller
 
     }
 
+    public function eliminar_discapacidad($id_discapacidad){
+        $discapacidad = Discapacidades::find($id_discapacidad);
+        $discapacidad->delete();
+        $discapacidades = Discapacidades::all();
+        return response() -> json($discapacidades);
+    }
+
+    function obtener_discapacidad_por_id($id_discapacidad){
+        return Discapacidades::selectRaw("*")
+        ->where('discapacidades.id_discapacidad',$id_discapacidad)
+        ->get();
+    }
+
+    function actualizar_discapacidad(Request $request){
+        $discapacidad = Discapacidades::where("id_discapacidad", "=", $request->get("id_discapacidad"));
+        $discapacidad->update([
+            "nombre" => $request->get("nombre"),
+            "codigo" => $request->get("codigo"),
+            "descrip" => $request->get("descrip"),            
+        ]);
+        return response() -> json($discapacidad);
+    }
+
 }

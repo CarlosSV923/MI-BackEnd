@@ -22,4 +22,28 @@ class MedicamentoController extends Controller
         return response()->json($medicamento->id_medicamento, 200);
 
     }
+
+    public function eliminar_medicamento($id_medicamento){
+        $medicamento = Medicamentos::find($id_medicamento);
+        $medicamento->delete();
+        $medicamentos = Medicamentos::all();
+        return response() -> json($medicamentos);
+    }
+
+    function obtener_medicamento_por_id($id_medicamento){
+        return Medicamentos::selectRaw("*")
+        ->where('medicamentos.id_medicamento',$id_medicamento)
+        ->get();
+    }
+
+    function actualizar_medicamento(Request $request){
+        $medicamento = Medicamentos::where("id_medicamento", "=", $request->get("id_medicamento"));
+        $medicamento->update([
+            "nombre" => $request->get("nombre"),
+            "codigo" => $request->get("codigo"),
+            "descrip" => $request->get("descrip"),            
+        ]);
+        return response() -> json($medicamento);
+    }
+
 }

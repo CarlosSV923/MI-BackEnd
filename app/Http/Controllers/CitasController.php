@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 use App\Models\Citas;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Models\EnfermedadesHereditarias;
+use App\Models\DiscapacidadPaciente;
+use App\Models\Alergias;
+use App\Models\EnfermedadesPersistentes;
+use App\Models\Users;
 
 class CitasController extends Controller
 {
@@ -126,5 +131,164 @@ class CitasController extends Controller
         return response() -> json ($cita ->id_cita);
     }
 
+    public function actualizar_cita(Request $request){
+        $cita = Citas::where("id_cita", "=", $request->get("id_cita"));
+        $cita->update([
+            "estado" => $request->get("estado"),
+            "observRec" => $request->get("observRec"),
+            "planTratam" => $request->get("planTratam"),
+            "instrucciones" => $request->get("instrucciones"),
+            "sintomas" => $request->get("sintomas"),
+            "fecha_atencion" => $request->get("fecha_atencion"),
+            "seguimiento" => $request->get("seguimiento"),
+        ]);
+        return response() -> json($cita);
+    }
+
+    public function info_paciente($cedula){
+
+        $pacientes = Users::select(
+            // "users.username as usuario",
+            "personas.cedula as cedula",
+            "personas.nombre as nombre",
+            "personas.apellido as apellido",
+            "personas.correo as correo",
+            "personas.sexo as sexo",
+            "personas.fecha_nacimiento as fecha_nacimiento",
+            // "users.password as password"
+        )
+        ->join("personas", "personas.cedula", '=', "users.cedula")
+        ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
+        ->where('personas.cedula', '=', $cedula)
+        ->get();
+        return response() -> json($pacientes);
+    }
+
+    public function informacion(Request $request){
+
+        $citas = Citas::select(
+            "citas.medico as medico",
+            "citas.paciente as paciente",
+            "personas.nombre as nombre",
+            "personas.apellido as apellido",
+        )
+        ->where('citas.id_cita', '=', $request -> get('id_cita'))
+        ->join("personas", "personas.cedula", '=', "citas.paciente")
+        ->get();
+        return response() -> json($citas);
+    }
+
+    public function mostrar_citas(){
+        $citas = Citas::select(
+            "citas.medico as medico",
+            "citas.paciente as paciente",
+            "citas.inicio_cita as inicio_cita",
+            "citas.fin_cita as fin_cita",
+            "citas.init_comment as init_comment",
+            "citas.estado as estado",
+            "citas.observRec as observRec",
+            "citas.planTratam as planTratam",
+            "citas.procedimiento as procedimiento",
+            "citas.instrucciones as instrucciones",
+            "citas.sintomas as sintomas",
+            "citas.fecha_agendada as fecha_agendada",
+            "citas.fecha_atencion as fecha_atencion",
+            "citas.seguimiento as seguimiento",
+        )
+        ->get();
+
+        // array_push($array, $discapacidades->id_discapacidad);
+        /* Por cada cita debo obtener:
+           1 Las discapacidades (discapacidad_paciente)
+           2 Las alergias (alergias)
+           3 Enfermedades persistentes (enfermedades_persistentes)
+           4 Enfermedades hereditarias (enfermedades_hereditarias)
+           5 Observaciones (citas) **********
+           6 Signos vitales (info_medica)
+           7 Examenes (examenes)
+           8 Enfermedades diagnóstico "comentario" (enfermedades_cita) el comentario en síntomas (citas) *********
+           9 Medicamentos (medicamentos_cita)
+           10 Instrucciones médicas (citas)*********
+           11 Plan tratamiento (citas)***********
+        */
+
+        for ($i = 0; $i < count($citas); $i++){
+            $cedula_paciente = $citas[$i]["paciente"];
+            
+            //Aquí obtengo todas las discapacidades de un paciente
+            $discapacidades_paciente = DiscapacidadPaciente::select(
+                "discapacidad_paciente.discapacidad as discapacidad",
+            )
+            ->get();
+
+            // Aquí obtengo las alergias de un paciente
+            $alergias_paciente = Alergias::select(
+                "alergias.medicamento as medicamento",
+            )
+            ->get();
+
+            //Aquí obtengo las enfermedades persistentes de un paciente
+            $enfermedades_persistentes = EnfermedadesPersistentes::select(
+                "enfermedades_persistentes.enfermedad as enfermedad_persistente",
+            )
+            ->get();
+
+            //Aquí obtengo las enfermedades hereditarias de un paciente
+            $enfermedades_hereditarias = EnfermedadesHereditarias::select(
+                "enfermedades_hereditarias.enfermedad as enfermedad_hereditaria",
+            )
+            ->get();
+
+            return response() -> json($enfermedades_hereditarias);
+            
+        }
+    }
+
+    public function mostrar_citas2(){
+        $citas = Citas::select(
+            "citas.medico as medico",
+            "citas.paciente as paciente",
+            "citas.inicio_cita as inicio_cita",
+            "citas.fin_cita as fin_cita",
+            "citas.init_comment as init_comment",
+            "citas.estado as estado",
+            "citas.observRec as observRec",
+            "citas.planTratam as planTratam",
+            "citas.procedimiento as procedimiento",
+            "citas.instrucciones as instrucciones",
+            "citas.sintomas as sintomas",
+            "citas.fecha_agendada as fecha_agendada",
+            "citas.fecha_atencion as fecha_atencion",
+            "citas.seguimiento as seguimiento",
+            "discapacidad_paciente.paciente as paciente_cedula",
+            "discapacidad_paciente.discapacidad as discapacidad",
+            "alergias.paciente as paciente_ced",
+            "alergias.medicamento as medicamento",
+            "enfermedades_persistentes.paciente as paciente_ced2",
+            "enfermedades_persistentes.enfermedad as enfermedad_persistente",
+            "enfermedades_hereditarias.paciente as paciente_ced3",
+            "enfermedades_hereditarias.enfermedad as enfermedad_hereditaria",
+            "enfermedades_citas.cita as id_cita",
+            "info_medica.cita as id_cita1",
+            "info_medica.seguimiento as id_seguimiento",
+            "info_medica.key as key",
+            "info_medica.value as value",
+            "info_medica.unidad as unidad",
+            "examenes.url_examen as url",
+        )
+        ->join("discapacidad_paciente", "discapacidad_paciente.paciente", '=', "citas.paciente")
+        ->join("alergias", "alergias.paciente", '=', "citas.paciente")
+        ->join("enfermedades_persistentes", "enfermedades_persistentes.paciente", '=', "citas.paciente")
+        ->join("enfermedades_hereditarias", "enfermedades_hereditarias.paciente", '=', "citas.paciente")
+        ->join("enfermedades_citas", "enfermedades_citas.cita", '=', "citas.id_cita")
+        ->join("info_medica", "info_medica.cita", '=', "citas.id_cita")
+        ->join("examenes", "examenes.cita", '=', "citas.id_cita")
+
+        // ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
+        // ->where('users.cedula', '=', $request -> get('ced'))
+        ->get();
+        // ->first();
+        return response() -> json($citas);
+    }
 
 }
