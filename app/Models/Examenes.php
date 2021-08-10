@@ -16,7 +16,7 @@ class Examenes extends Model
      * @var array
      */
     protected $fillable = [
-        'url_examen', "seguimiento", "diagnostico","tipo_examen", "medico", "paciente", "comentarios", "cita"
+        'url_examen', "seguimiento", "diagnostico","tipo_examen", "medico", "paciente", "comentarios", 'created_at',"cita"
     ];
 
 
@@ -26,7 +26,7 @@ class Examenes extends Model
      * @var array
      */
     protected $hidden = [
-    	'created_at', 'updated_at'
+    	 'updated_at'
     ];
 
     public function citas()

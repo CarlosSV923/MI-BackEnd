@@ -14,15 +14,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('/getExFilter', 'CitasController@getExFilter');
+
 Route::post('/getPacientesFilter', 'PersonasController@getPacientesFilter');
 
 Route::post('/getMedicosFilter', 'PersonasController@getMedicosFilter');
 
 Route::post('/agendarCita', 'CitasController@agendarCita');
 
+Route::post('/agendarCitaAsociada', 'CitasController@agendarCitaAsociada');
+
+Route::post('/getSeguimientoData', 'SeguimientosController@getSeguimientoData');
+
+Route::post('/finalizarSeguimiento', 'SeguimientosController@finalizarSeguimiento');
+
+Route::post('/getAllSeguimientos', 'SeguimientosController@getAllSeguimientos');
+
 Route::post('/getCitasReporte', 'CitasController@getCitasReporte');
 
 Route::post('/getCitasMedico', 'CitasController@getCitasMedico');
+
+Route::post('/getCitasSeg', 'CitasController@getCitasSeg');
 
 Route::post('/getCitasPaciente', 'CitasController@getCitasPaciente');
 
@@ -34,6 +46,10 @@ Route::post('/login', 'UsersController@login');
 /* API exámenes */
 Route::post('/upload/images', 'ImageUploadController@uploadImages');
 Route::post('/saveImages', 'ImageUploadController@saveImages');
+
+Route::post('/saveExamen', 'ImageUploadController@saveExamen');
+Route::post('/editExamen', 'ImageUploadController@editExamen');
+Route::post('/deleteExamen', 'ImageUploadController@deleteExamen');
 Route::get('/mostrar_examenes', 'ImageUploadController@mostrar_examenes');
 
 /* API citas */
@@ -71,6 +87,9 @@ Route::post('/almacenar_enfermedades_persistentes_paciente', 'EnfermedadPersiste
 
 /* API infoMedica signos vitales */
 Route::get('/mostrar_signos_vitales', 'InfoMedicaController@mostrar_signos_vitales');
+Route::post('/saveSignoVital', 'InfoMedicaController@saveSignoVital');
+Route::post('/editSignoVital', 'InfoMedicaController@editSignoVital');
+Route::post('/deleteSignoVital', 'InfoMedicaController@deleteSignoVital');
 Route::post('/almacenar_signos_vitales_paciente', 'InfoMedicaController@almacenar_signos_vitales_paciente');
 
 /* API medicamentos citas */
