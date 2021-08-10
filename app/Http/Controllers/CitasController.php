@@ -54,18 +54,21 @@ class CitasController extends Controller
         $cita->fecha_agendada = Date('Y-m-d H:i:s');
         $cita->seguimiento = $request->get("id_seguimiento");
         $cita->save();
-        try {
 
-            $paciente = Personas::select("*")->where("cedula", "=",  $request->get("paciente"))->first();
-            $medico = Personas::select("*")->where("cedula", "=",  $request->get("medico"))->first();
+        if ($request->get("isPaciente")) {
+            try {
 
-            $nombPac = $paciente["nombre"] . " " . $paciente["apellido"];
-            $accion = "Agendó una nueva cita en relación a su seguimiento actual.";
-            $value = "Ingrese a la plataforma para revisar mas detalles.";
+                $paciente = Personas::select("*")->where("cedula", "=",  $request->get("paciente"))->first();
+                $medico = Personas::select("*")->where("cedula", "=",  $request->get("medico"))->first();
 
-            Mail::to($medico["correo"])->send(new NotificationMail($nombPac, $accion, $value));
-        } catch (\Exception $ex) {
-            $this->Log("[agendarCitaAsociada]: Fallo envio de correo");
+                $nombPac = $paciente["nombre"] . " " . $paciente["apellido"];
+                $accion = "Agendó una nueva cita en relación a su seguimiento actual.";
+                $value = "Ingrese a la plataforma para revisar mas detalles.";
+
+                Mail::to($medico["correo"])->send(new NotificationMail($nombPac, $accion, $value));
+            } catch (\Exception $ex) {
+                $this->Log("[agendarCitaAsociada]: Fallo envio de correo");
+            }
         }
 
         return response()->json(['log' => 'exito'], 200);

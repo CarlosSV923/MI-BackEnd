@@ -48,19 +48,20 @@ class InfoMedicaController extends Controller
         $signo_vital->unidad = $request->get('unidad');
         $signo_vital->descrip = $request->get('descrip');
         $signo_vital->save();
+        if ($request->get("isPaciente")) {
+            try {
+                $paciente = Personas::select("*")->where("cedula", "=",  $request->get("paciente"))->first();
+                $medico = Personas::select("*")->where("cedula", "=",  $request->get("medico"))->first();
 
-        try {
-            $paciente = Personas::select("*")->where("cedula", "=",  $request->get("paciente"))->first();
-            $medico = Personas::select("*")->where("cedula", "=",  $request->get("medico"))->first();
+                $nombPac = $paciente["nombre"] . " " . $paciente["apellido"];
+                $accion = "Publico un nuevo Signo Vial en relacion a su seguimiento actual.";
+                $value = "Ingrese a la plataforma para revisar mas detalles.";
 
-            $nombPac = $paciente["nombre"] . " " . $paciente["apellido"];
-            $accion = "Publico un nuevo Signo Vial en relacion a su seguimiento actual.";
-            $value = "Ingrese a la plataforma para revisar mas detalles.";
-
-            Mail::to($medico["correo"])->send(new NotificationMail($nombPac, $accion, $value));
-        } catch (\Exception $e) {
-            $this->Log("[saveSignoVital]: Fallo envio de correo.");
-           $this->Log(json_encode($e));
+                Mail::to($medico["correo"])->send(new NotificationMail($nombPac, $accion, $value));
+            } catch (\Exception $e) {
+                $this->Log("[saveSignoVital]: Fallo envio de correo.");
+                $this->Log(json_encode($e));
+            }
         }
 
         return response()->json($signo_vital, 200);
@@ -78,9 +79,10 @@ class InfoMedicaController extends Controller
         return response()->json($signo_vital, 200);
     }
 
-    public function  deleteSignoVital(Request $request){
+    public function  deleteSignoVital(Request $request)
+    {
         $sig = InfoMedica::find($request->get("id_info_medica"));
         $sig->delete();
-        return response()->json(["log"=>"exito"], 200);
+        return response()->json(["log" => "exito"], 200);
     }
 }
