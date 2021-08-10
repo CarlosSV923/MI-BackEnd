@@ -457,7 +457,56 @@ class UsersController extends Controller
         // return response() -> json($medicamentos);
 
         return response() -> json([$pacientes, $alergias, $discapacidades, $enfermedades_hereditarias, $enfermedades_persistentes, $signos_vitales, $citas, $examenes, $enfermedades_cita, $medicamentos]);
+    }
 
+    /*
+    
+
+    $usuarios = Users::select(
+            "users.username as usuario",
+            "personas.cedula as cedula",
+            "personas.nombre as nombre",
+            "personas.apellido as apellido",
+            "personas.correo as correo",
+            "personas.sexo as sexo",
+            "personas.fecha_nacimiento as fecha_nacimiento",
+            "roles.nombre as rol",
+            "roles.id_rol as id_rol",
+            "users.estado as estado",
+            // "users.password as password"
+        )
+        ->join("personas", "personas.cedula", '=', "users.cedula")
+        ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
+        ->get();
+
+
+    */
+
+    public function usuarios(Request $request){
+        $cedula= $request->get("cedula");
+        $query= Users::select(
+            "users.username as usuario",
+            "personas.cedula as cedula",
+            "personas.nombre as nombre",
+            "personas.apellido as apellido",
+            "personas.correo as correo",
+            "personas.sexo as sexo",
+            "personas.fecha_nacimiento as fecha_nacimiento",
+            "roles.nombre as rol",
+            "roles.id_rol as id_rol",
+            "users.estado as estado",
+        )
+        ->join("personas", "personas.cedula", '=', "users.cedula")
+        ->join('roles', 'roles.id_rol', '=', 'users.id_rol');
+
+        if (!empty($cedula)){
+            $query= $query->where('personas.cedula','like','%'.$cedula.'%');
+        }
+        $itemSize = $query->count();
+        $query->orderBy('personas.created_at', 'desc');
+        // $query->orderBy('personas.created_at', 'asc');
+        $query= $query->limit($request->get("page_size"))->offset($request->get("page_size") * $request->get("page_index")); 
+        return response()->json(["resp" => $query->get(), "itemSize" => $itemSize])->header("itemSize", $itemSize);
     }
 
 }

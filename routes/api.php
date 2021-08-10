@@ -50,6 +50,7 @@ Route::post('/almacenar_discapacidad', 'DiscapacidadController@almacenar_discapa
 Route::delete('/eliminar_discapacidad/{id_discapacidad}', 'DiscapacidadController@eliminar_discapacidad');
 Route::get('/obtener_discapacidad_por_id/{id_discapacidad}', 'DiscapacidadController@obtener_discapacidad_por_id');
 Route::post('/actualizar_discapacidad','DiscapacidadController@actualizar_discapacidad');
+Route::post('/discapacidades','DiscapacidadController@discapacidades');
 
 /* API discapacidades pacientes */
 Route::get('/mostrar_discapacidades_pacientes', 'DiscapacidadPacienteController@mostrar_discapacidades_pacientes');
@@ -81,7 +82,9 @@ Route::get('/mostrar_medicamentos', 'MedicamentoController@mostrar_medicamentos'
 Route::post('almacenar_medicamento', 'MedicamentoController@almacenar_medicamento');
 Route::delete('/eliminar_medicamento/{id_medicamento}', 'MedicamentoController@eliminar_medicamento');
 Route::get('/obtener_medicamento_por_id/{id_medicamento}', 'MedicamentoController@obtener_medicamento_por_id');
+Route::get('/buscar_medicamentos/{nombre}', 'MedicamentoController@buscar_medicamentos');
 Route::post('/actualizar_medicamento','MedicamentoController@actualizar_medicamento');
+Route::post('/medicamentos','MedicamentoController@medicamentos');
 
 /* API enfermedades citas */
 Route::get('/mostrar_enfermedades_cita', 'EnfermedadCitaController@mostrar_enfermedades_cita');
@@ -94,6 +97,7 @@ Route::post('/almacenar_enfermedad', 'EnfermedadController@almacenar_enfermedad'
 Route::delete('/eliminar_enfermedad/{id_enfermedad}', 'EnfermedadController@eliminar_enfermedad');
 Route::get('/obtener_enfermedad_por_id/{id_enfermedad}', 'EnfermedadController@obtener_enfermedad_por_id');
 Route::post('/actualizar_enfermedad','EnfermedadController@actualizar_enfermedad');
+Route::post('/enfermedades','EnfermedadController@enfermedades');
 
 /* API roles */
 Route::post('/almacenar_rol', 'RolController@almacenar_rol');
@@ -101,6 +105,8 @@ Route::get('/mostrar_roles', 'RolController@mostrar_roles');
 Route::delete('/eliminar_rol/{id_rol}', 'RolController@eliminar_rol');
 Route::get('/obtener_rol_por_id/{id_rol}', 'RolController@obtener_rol_por_id');
 Route::post('/actualizar_rol', 'RolController@actualizar_rol');
+Route::post('/roles', 'RolController@roles');
+
 
 /* API usuarios */
 Route::post('/almacenar_usuario', 'UsersController@almacenar_usuario');
@@ -113,3 +119,4 @@ Route::post('/actualizar_perfil', 'UsersController@actualizar_perfil');
 Route::get('/mostrar_pacientes', 'UsersController@mostrar_pacientes');
 Route::post('mostrar_informacion_expediente', 'UsersController@mostrar_informacion_expediente');
 Route::post('mostrar_informacion_cita_paciente', 'UsersController@mostrar_informacion_cita_paciente');
+Route::post('usuarios', 'UsersController@usuarios');

@@ -69,5 +69,18 @@ class DiscapacidadController extends Controller
         ]);
         return response() -> json($discapacidad);
     }
+    
+    public function discapacidades(Request $request){
+        $nombre= $request->get("nombre");
+        $query= Discapacidades::select('discapacidades.id_discapacidad','discapacidades.nombre','discapacidades.codigo','discapacidades.descrip');
+        if (!empty($nombre)){
+            $query= $query->where('discapacidades.nombre','like','%'.$nombre.'%');
+        }
+        $itemSize = $query->count();
+        $query->orderBy('discapacidades.created_at', 'desc');
+        // $query->orderBy('discapacidades.created_at', 'asc');
+        $query= $query->limit($request->get("page_size"))->offset($request->get("page_size") * $request->get("page_index")); 
+        return response()->json(["resp" => $query->get(), "itemSize" => $itemSize])->header("itemSize", $itemSize);
+    }
 
 }
