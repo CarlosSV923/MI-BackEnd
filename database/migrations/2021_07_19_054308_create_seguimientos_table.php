@@ -16,10 +16,10 @@ class CreateSeguimientosTable extends Migration
         Schema::create('seguimientos', function (Blueprint $table) {
             $table->bigIncrements('id_seguimiento');
             $table->date('fecha_inicio');
-            $table->date('fecha_fin');
+            $table->date('fecha_fin')->nullable();;
             $table->string('paciente');
             $table->string('medico');
-            $table->string('estado')->default('I');
+            $table->string('estado')->default('P');
             $table->timestamps();
 
             $table->foreign('paciente')

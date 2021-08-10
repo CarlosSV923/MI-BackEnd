@@ -16,7 +16,7 @@ class InfoMedica extends Model
      * @var array
      */
     protected $fillable = [
-        'unidad', "seguimiento", "cita","value", "key", "descrip"
+        'unidad', "seguimiento", "cita","value", "key", 'created_at', "descrip"
     ];
 
 
@@ -26,7 +26,7 @@ class InfoMedica extends Model
      * @var array
      */
     protected $hidden = [
-    	'created_at', 'updated_at'
+    	 'updated_at'
     ];
 
     public function citas()

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Models\Citas;
+use App\Models\Examenes;
 use App\Models\Enfermedades;
+use App\Models\Personas;
 use App\Models\Medicamentos;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -13,6 +16,7 @@ use App\Models\DiscapacidadPaciente;
 use App\Models\Alergias;
 use App\Models\EnfermedadesPersistentes;
 use App\Models\Users;
+use App\Mail\NotificationMail;
 
 class CitasController extends Controller
 {
@@ -34,6 +38,35 @@ class CitasController extends Controller
         $cita->fin_cita = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("fin_cita"));
         $cita->fecha_agendada = Date('Y-m-d H:i:s');
         $cita->save();
+
+        return response()->json(['log' => 'exito'], 200);
+    }
+
+    public function agendarCitaAsociada(Request $request)
+    {
+        $cita = new Citas();
+
+        $cita->paciente = $request->get("paciente");
+        $cita->medico = $request->get("medico");
+        $cita->init_comment = $request->get("init_comment");
+        $cita->inicio_cita = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("inicio_cita"));
+        $cita->fin_cita = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("fin_cita"));
+        $cita->fecha_agendada = Date('Y-m-d H:i:s');
+        $cita->seguimiento = $request->get("id_seguimiento");
+        $cita->save();
+        try {
+
+            $paciente = Personas::select("*")->where("cedula", "=",  $request->get("paciente"))->first();
+            $medico = Personas::select("*")->where("cedula", "=",  $request->get("medico"))->first();
+
+            $nombPac = $paciente["nombre"] . " " . $paciente["apellido"];
+            $accion = "Agendó una nueva cita en relación a su seguimiento actual.";
+            $value = "Ingrese a la plataforma para revisar mas detalles.";
+
+            Mail::to($medico["correo"])->send(new NotificationMail($nombPac, $accion, $value));
+        } catch (\Exception $ex) {
+            $this->Log("[agendarCitaAsociada]: Fallo envio de correo");
+        }
 
         return response()->json(['log' => 'exito'], 200);
     }
@@ -71,6 +104,26 @@ class CitasController extends Controller
         return response()->json($query->get(), 200);
     }
 
+    public function getCitasSeg(Request $request)
+    {
+        $seg =  $request->get("id_seguimiento");
+        $dateMin = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_min"));
+        $dateMax = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max"));
+
+
+        if (empty($seg) ||  empty($dateMax) || empty($dateMin)) {
+            return response()->json(['log' => 'error'], 400);
+        }
+
+        $query = Citas::select(
+            '*'
+        )
+            ->where("citas.seguimiento", "=", $seg)
+            ->where("citas.fecha_agendada", "<=", $dateMax)
+            ->where("citas.fecha_agendada", ">=", $dateMin);
+
+        return response()->json($query->get(), 200);
+    }
     public function getCitasPaciente(Request $request)
     {
         $cedula =  $request->get("cedula");
@@ -138,7 +191,8 @@ class CitasController extends Controller
         return response()->json($cita->id_cita);
     }
 
-    public function actualizar_cita(Request $request){
+    public function actualizar_cita(Request $request)
+    {
         $cita = Citas::where("id_cita", "=", $request->get("id_cita"));
         $cita->update([
             "estado" => $request->get("estado"),
@@ -149,10 +203,11 @@ class CitasController extends Controller
             "fecha_atencion" => $request->get("fecha_atencion"),
             "seguimiento" => $request->get("seguimiento"),
         ]);
-        return response() -> json($cita);
+        return response()->json($cita);
     }
 
-    public function info_paciente($cedula){
+    public function info_paciente($cedula)
+    {
 
         $pacientes = Users::select(
             // "users.username as usuario",
@@ -164,14 +219,15 @@ class CitasController extends Controller
             "personas.fecha_nacimiento as fecha_nacimiento",
             // "users.password as password"
         )
-        ->join("personas", "personas.cedula", '=', "users.cedula")
-        ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
-        ->where('personas.cedula', '=', $cedula)
-        ->get();
-        return response() -> json($pacientes);
+            ->join("personas", "personas.cedula", '=', "users.cedula")
+            ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
+            ->where('personas.cedula', '=', $cedula)
+            ->get();
+        return response()->json($pacientes);
     }
 
-    public function informacion(Request $request){
+    public function informacion(Request $request)
+    {
 
         $citas = Citas::select(
             "citas.medico as medico",
@@ -179,13 +235,14 @@ class CitasController extends Controller
             "personas.nombre as nombre",
             "personas.apellido as apellido",
         )
-        ->where('citas.id_cita', '=', $request -> get('id_cita'))
-        ->join("personas", "personas.cedula", '=', "citas.paciente")
-        ->get();
-        return response() -> json($citas);
+            ->where('citas.id_cita', '=', $request->get('id_cita'))
+            ->join("personas", "personas.cedula", '=', "citas.paciente")
+            ->get();
+        return response()->json($citas);
     }
 
-    public function mostrar_citas(){
+    public function mostrar_citas()
+    {
         $citas = Citas::select(
             "citas.medico as medico",
             "citas.paciente as paciente",
@@ -202,7 +259,7 @@ class CitasController extends Controller
             "citas.fecha_atencion as fecha_atencion",
             "citas.seguimiento as seguimiento",
         )
-        ->get();
+            ->get();
 
         // array_push($array, $discapacidades->id_discapacidad);
         /* Por cada cita debo obtener:
@@ -219,39 +276,39 @@ class CitasController extends Controller
            11 Plan tratamiento (citas)***********
         */
 
-        for ($i = 0; $i < count($citas); $i++){
+        for ($i = 0; $i < count($citas); $i++) {
             $cedula_paciente = $citas[$i]["paciente"];
-            
+
             //Aquí obtengo todas las discapacidades de un paciente
             $discapacidades_paciente = DiscapacidadPaciente::select(
                 "discapacidad_paciente.discapacidad as discapacidad",
             )
-            ->get();
+                ->get();
 
             // Aquí obtengo las alergias de un paciente
             $alergias_paciente = Alergias::select(
                 "alergias.medicamento as medicamento",
             )
-            ->get();
+                ->get();
 
             //Aquí obtengo las enfermedades persistentes de un paciente
             $enfermedades_persistentes = EnfermedadesPersistentes::select(
                 "enfermedades_persistentes.enfermedad as enfermedad_persistente",
             )
-            ->get();
+                ->get();
 
             //Aquí obtengo las enfermedades hereditarias de un paciente
             $enfermedades_hereditarias = EnfermedadesHereditarias::select(
                 "enfermedades_hereditarias.enfermedad as enfermedad_hereditaria",
             )
-            ->get();
+                ->get();
 
-            return response() -> json($enfermedades_hereditarias);
-            
+            return response()->json($enfermedades_hereditarias);
         }
     }
 
-    public function mostrar_citas2(){
+    public function mostrar_citas2()
+    {
         $citas = Citas::select(
             "citas.medico as medico",
             "citas.paciente as paciente",
@@ -283,19 +340,19 @@ class CitasController extends Controller
             "info_medica.unidad as unidad",
             "examenes.url_examen as url",
         )
-        ->join("discapacidad_paciente", "discapacidad_paciente.paciente", '=', "citas.paciente")
-        ->join("alergias", "alergias.paciente", '=', "citas.paciente")
-        ->join("enfermedades_persistentes", "enfermedades_persistentes.paciente", '=', "citas.paciente")
-        ->join("enfermedades_hereditarias", "enfermedades_hereditarias.paciente", '=', "citas.paciente")
-        ->join("enfermedades_citas", "enfermedades_citas.cita", '=', "citas.id_cita")
-        ->join("info_medica", "info_medica.cita", '=', "citas.id_cita")
-        ->join("examenes", "examenes.cita", '=', "citas.id_cita")
+            ->join("discapacidad_paciente", "discapacidad_paciente.paciente", '=', "citas.paciente")
+            ->join("alergias", "alergias.paciente", '=', "citas.paciente")
+            ->join("enfermedades_persistentes", "enfermedades_persistentes.paciente", '=', "citas.paciente")
+            ->join("enfermedades_hereditarias", "enfermedades_hereditarias.paciente", '=', "citas.paciente")
+            ->join("enfermedades_citas", "enfermedades_citas.cita", '=', "citas.id_cita")
+            ->join("info_medica", "info_medica.cita", '=', "citas.id_cita")
+            ->join("examenes", "examenes.cita", '=', "citas.id_cita")
 
-        // ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
-        // ->where('users.cedula', '=', $request -> get('ced'))
-        ->get();
+            // ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
+            // ->where('users.cedula', '=', $request -> get('ced'))
+            ->get();
         // ->first();
-        return response() -> json($citas);
+        return response()->json($citas);
     }
     public function getCitasReporte(Request $request)
     {
@@ -371,5 +428,24 @@ class CitasController extends Controller
         }
 
         return response()->json($arrResp, 200);
+    }
+
+    public function getExFilter(Request $request)
+    {
+        $seg =  $request->get("id_seguimiento");
+        $dateMin = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_min"));
+        $dateMax = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max"));
+
+
+        if (empty($seg) ||  empty($dateMax) || empty($dateMin)) {
+            return response()->json(['log' => 'error'], 400);
+        }
+
+        $ex = Examenes::select("*")
+            ->where("examenes.seguimiento", '=', $seg)
+            ->where("examenes.created_at", "<=", $dateMax)
+            ->where("examenes.created_at", ">=", $dateMin);
+
+        return response()->json($ex->get(), 200);
     }
 }

@@ -17,8 +17,8 @@ class CreateExamenesTable extends Migration
             $table->bigIncrements('id_examen');
             $table->string('medico');
             $table->string('paciente');
-            $table->bigInteger('cita')->unsigned();
-            $table->bigInteger('seguimiento')->unsigned();
+            $table->bigInteger('cita')->unsigned()->nullable();;
+            $table->bigInteger('seguimiento')->unsigned()->nullable();;
             $table->string('tipo_examen');
             $table->string('diagnostico');
             $table->string('url_examen');
@@ -37,12 +37,12 @@ class CreateExamenesTable extends Migration
 
             $table->foreign('cita')
             ->references('id_cita')->on('citas')
-            ->onDelete('cascade')
+            ->onDelete('set null')
             ->onUpdate('cascade');
 
             $table->foreign('seguimiento')
             ->references('id_seguimiento')->on('seguimientos')
-            ->onDelete('cascade')
+            ->onDelete('set null')
             ->onUpdate('cascade');
         });
     }

@@ -15,8 +15,8 @@ class CreateInfoMedicaTable extends Migration
     {
         Schema::create('info_medica', function (Blueprint $table) {
             $table->bigIncrements('id_info_medica');
-            $table->bigInteger('cita')->unsigned();
-            $table->bigInteger('seguimiento')->unsigned();
+            $table->bigInteger('cita')->unsigned()->nullable();
+            $table->bigInteger('seguimiento')->unsigned()->nullable();
             $table->string('key');
             $table->string('value');
             $table->string('unidad');
@@ -25,12 +25,12 @@ class CreateInfoMedicaTable extends Migration
 
             $table->foreign('cita')
             ->references('id_cita')->on('citas')
-            ->onDelete('cascade')
+            ->onDelete('set null')
             ->onUpdate('cascade');
 
             $table->foreign('seguimiento')
             ->references('id_seguimiento')->on('seguimientos')
-            ->onDelete('cascade')
+            ->onDelete('set null')
             ->onUpdate('cascade');
         });
     }
