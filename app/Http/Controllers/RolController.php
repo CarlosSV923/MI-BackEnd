@@ -44,4 +44,17 @@ class RolController extends Controller
         return response() -> json($rol);
     }
 
+    public function roles(Request $request){
+        $nombre= $request->get("nombre");
+        $query= Roles::select('roles.id_rol','roles.nombre','roles.descrip');
+        if (!empty($nombre)){
+            $query= $query->where('roles.nombre','like','%'.$nombre.'%');
+        }
+        $itemSize = $query->count();
+        $query->orderBy('roles.created_at', 'desc');
+        // $query->orderBy('roles.created_at', 'asc');
+        $query= $query->limit($request->get("page_size"))->offset($request->get("page_size") * $request->get("page_index")); 
+        return response()->json(["resp" => $query->get(), "itemSize" => $itemSize])->header("itemSize", $itemSize);
+    }
+
 }

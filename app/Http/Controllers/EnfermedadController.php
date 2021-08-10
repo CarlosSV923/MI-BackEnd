@@ -62,4 +62,17 @@ class EnfermedadController extends Controller
         return response() -> json($enfermedad);
     }
 
+    public function enfermedades(Request $request){
+        $nombre= $request->get("nombreLargo");
+        $query= enfermedades::select('enfermedades.id_enfermedad','enfermedades.nombreCorto', 'enfermedades.nombreLargo','enfermedades.codigo','enfermedades.descrip');
+        if (!empty($nombre)){
+            $query= $query->where('enfermedades.nombreLargo','like','%'.$nombre.'%');
+        }
+        $itemSize = $query->count();
+        $query->orderBy('enfermedades.created_at', 'desc');
+        // $query->orderBy('enfermedades.created_at', 'asc');
+        $query= $query->limit($request->get("page_size"))->offset($request->get("page_size") * $request->get("page_index")); 
+        return response()->json(["resp" => $query->get(), "itemSize" => $itemSize])->header("itemSize", $itemSize);
+    }
+
 }

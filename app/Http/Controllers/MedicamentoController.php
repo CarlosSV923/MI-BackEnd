@@ -46,4 +46,23 @@ class MedicamentoController extends Controller
         return response() -> json($medicamento);
     }
 
+    function buscar_medicamentos($nombre){
+        return Medicamentos::selectRaw("*")
+        ->where('medicamentos.nombre','like','%'.$nombre.'%')
+        ->get();
+    }
+
+    public function medicamentos(Request $request){
+        $nombre= $request->get("nombre");
+        $query= Medicamentos::select('medicamentos.id_medicamento','medicamentos.nombre','medicamentos.codigo','medicamentos.descrip');
+        if (!empty($nombre)){
+            $query= $query->where('medicamentos.nombre','like','%'.$nombre.'%');
+        }
+        $itemSize = $query->count();
+        $query->orderBy('medicamentos.created_at', 'desc');
+        // $query->orderBy('medicamentos.created_at', 'asc');
+        $query= $query->limit($request->get("page_size"))->offset($request->get("page_size") * $request->get("page_index")); 
+        return response()->json(["resp" => $query->get(), "itemSize" => $itemSize])->header("itemSize", $itemSize);
+    }
+
 }
