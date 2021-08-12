@@ -95,4 +95,17 @@ class SeguimientosController extends Controller
 
         return response()->json($seguimientos->get(), 200);
     }
+
+    public function crear_seguimiento(Request $request){
+        $seguimiento = new Seguimientos();
+        $seguimiento -> fecha_inicio = $request -> get('fecha_inicio');
+        // $seguimiento -> fecha_fin = $request -> get('fecha_fin');
+        $seguimiento -> paciente = $request -> get('paciente');
+        $seguimiento -> medico = $request -> get('medico');
+        $seguimiento -> estado = 'Activo';
+        $seguimiento->save();
+        
+        return response()->json($seguimiento, 200);
+    }
+    
 }

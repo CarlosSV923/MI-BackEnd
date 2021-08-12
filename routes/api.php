@@ -28,6 +28,8 @@ Route::post('/getSeguimientoData', 'SeguimientosController@getSeguimientoData');
 
 Route::post('/finalizarSeguimiento', 'SeguimientosController@finalizarSeguimiento');
 
+Route::post('/crear_seguimiento', 'SeguimientosController@crear_seguimiento');
+
 Route::post('/getAllSeguimientos', 'SeguimientosController@getAllSeguimientos');
 
 Route::post('/getCitasReporte', 'CitasController@getCitasReporte');
@@ -139,3 +141,4 @@ Route::get('/mostrar_pacientes', 'UsersController@mostrar_pacientes');
 Route::post('mostrar_informacion_expediente', 'UsersController@mostrar_informacion_expediente');
 Route::post('mostrar_informacion_cita_paciente', 'UsersController@mostrar_informacion_cita_paciente');
 Route::post('usuarios', 'UsersController@usuarios');
+Route::post('pacientes', 'UsersController@pacientes');

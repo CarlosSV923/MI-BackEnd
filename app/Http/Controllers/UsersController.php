@@ -228,7 +228,7 @@ class UsersController extends Controller
         return response() -> json($pacientes);
     }
 
-    public function mostrar_informacion_expediente (Request $request){
+    public function mostrar_informacion_expediente2 (Request $request){
 
         $pacientes = Users::select(
             // "users.username as usuario",
@@ -324,6 +324,117 @@ class UsersController extends Controller
         ->get();
                                     
         return response() -> json([$pacientes, $alergias, $discapacidades, $enfermedades_hereditarias, $enfermedades_persistentes, $signos_vitales, $citas]);
+
+    }
+
+    public function mostrar_informacion_expediente (Request $request){
+
+        $pacientes = Users::select(
+            // "users.username as usuario",
+            "personas.cedula as cedula",
+            "personas.nombre as nombre",
+            "personas.apellido as apellido",
+            "personas.correo as correo",
+            "personas.sexo as sexo",
+            "personas.fecha_nacimiento as fecha_nacimiento",
+            // "users.password as password"
+        )
+        ->join("personas", "personas.cedula", '=', "users.cedula")
+        ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
+        ->where('personas.cedula', '=', $request -> get("cedula"))
+        ->get();
+
+        $discapacidades = DiscapacidadPaciente::select(
+            "discapacidad_paciente.discapacidad as discapacidad",
+            "discapacidad_paciente.paciente as paciente",
+            "discapacidades.nombre as nombre_discapacidad"
+        )
+        ->join("discapacidades", "discapacidades.id_discapacidad", '=', "discapacidad_paciente.discapacidad")
+        ->where('discapacidad_paciente.paciente', '=', $request -> get("cedula"))
+        ->get();
+                
+        $alergias = Alergias::select(
+            "alergias.medicamento as medicamento_alergia",
+            "alergias.paciente as paciente",
+            "medicamentos.nombre as nombre_alergia"
+        )
+        ->join("medicamentos", "medicamentos.id_medicamento", '=', "alergias.medicamento")
+        ->where('alergias.paciente', '=', $request -> get("cedula"))
+        ->get();
+                    
+        $enfermedades_persistentes = EnfermedadesPersistentes::select(
+            "enfermedades_persistentes.enfermedad as id_enfermedad",
+            "enfermedades_persistentes.paciente as paciente",
+            "enfermedades.nombreLargo as nombre_enfermedad"
+        )
+        ->join("enfermedades", "enfermedades.id_enfermedad", '=', "enfermedades_persistentes.enfermedad")
+        ->where('enfermedades_persistentes.paciente', '=', $request -> get("cedula"))
+        ->get();
+                        
+        $enfermedades_hereditarias = EnfermedadesHereditarias::select(
+            "enfermedades_hereditarias.enfermedad as id_enfermedad",
+            "enfermedades_hereditarias.paciente as paciente",
+            "enfermedades.nombreLargo as nombre_enfermedad"
+        )
+        ->join("enfermedades", "enfermedades.id_enfermedad", '=', "enfermedades_hereditarias.enfermedad")
+        ->where('enfermedades_hereditarias.paciente', '=', $request -> get("cedula"))
+        ->get();
+        
+        $ids = InfoMedica::select(
+            "info_medica.cita as id_max"
+        )
+        ->join("citas", "citas.id_cita", '=', "info_medica.cita")
+        ->where('citas.paciente', '=', $request -> get("cedula"))
+        // ->lastest();
+        ->get();
+
+
+        // return response() -> json(count($ids));
+
+        $signos_vitales = "";
+
+        if(count($ids)){
+            $lista = $ids;
+            $id_maxi = $ids[count($lista) - 1]["id_max"];
+            
+            $signos_vitales = InfoMedica::select(
+                "info_medica.key as key",
+                "info_medica.value as value",
+                "info_medica.unidad as unidad"
+            )
+            ->where('info_medica.cita', '=', $id_maxi)
+            ->get();
+        }else{
+            $signos_vitales = [];
+        }
+
+
+        $citas = Citas::select(
+            "citas.id_cita as id_cita",
+            "citas.medico as medico",
+            "citas.paciente as paciente",
+            "citas.fecha_atencion as fecha_atencion",
+            "personas.nombre as nombre",
+            "personas.apellido as apellido"
+        )
+        ->join("personas", "personas.cedula", '=', "citas.medico")
+        ->where('citas.paciente', '=', $request -> get('cedula') )
+        ->where('citas.estado', '=', 'A' )
+        ->get();
+        
+        //"citas.observRec as observRec",
+
+
+        $comentarios_citas = Citas::select(
+            "citas.id_cita as id_cita",
+            "citas.observRec as observRec"
+        )
+        ->join("personas", "personas.cedula", '=', "citas.medico")
+        ->where('citas.paciente', '=', $request -> get('cedula') )
+        ->where('citas.estado', '=', 'A' )
+        ->get();
+
+        return response() -> json([$pacientes, $alergias, $discapacidades, $enfermedades_hereditarias, $enfermedades_persistentes, $signos_vitales, $citas, $comentarios_citas]);
 
     }
 
@@ -498,6 +609,55 @@ class UsersController extends Controller
         )
         ->join("personas", "personas.cedula", '=', "users.cedula")
         ->join('roles', 'roles.id_rol', '=', 'users.id_rol');
+
+        if (!empty($cedula)){
+            $query= $query->where('personas.cedula','like','%'.$cedula.'%');
+        }
+        $itemSize = $query->count();
+        $query->orderBy('personas.created_at', 'desc');
+        // $query->orderBy('personas.created_at', 'asc');
+        $query= $query->limit($request->get("page_size"))->offset($request->get("page_size") * $request->get("page_index")); 
+        return response()->json(["resp" => $query->get(), "itemSize" => $itemSize])->header("itemSize", $itemSize);
+    }
+
+
+
+
+    public function paciente2(){
+        $pacientes = Users::select(
+            // "users.username as usuario",
+            "personas.cedula as cedula",
+            "personas.nombre as nombre",
+            "personas.apellido as apellido",
+            "personas.correo as correo",
+            "personas.sexo as sexo",
+            "personas.fecha_nacimiento as fecha_nacimiento",
+            // "users.password as password"
+        )
+        ->join("personas", "personas.cedula", '=', "users.cedula")
+        ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
+        ->where('roles.id_rol', '=', 2)
+
+        ->get();
+        return response() -> json($pacientes);
+    }
+
+
+    public function pacientes(Request $request){
+        $cedula= $request->get("cedula");
+        $query= Users::select(
+            // "users.username as usuario",
+            "personas.cedula as cedula",
+            "personas.nombre as nombre",
+            "personas.apellido as apellido",
+            "personas.correo as correo",
+            "personas.sexo as sexo",
+            "personas.fecha_nacimiento as fecha_nacimiento",
+            // "users.password as password"
+        )
+        ->join("personas", "personas.cedula", '=', "users.cedula")
+        ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
+        ->where('roles.id_rol', '=', 2);
 
         if (!empty($cedula)){
             $query= $query->where('personas.cedula','like','%'.$cedula.'%');
