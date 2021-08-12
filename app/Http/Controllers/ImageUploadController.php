@@ -26,7 +26,7 @@ class ImageUploadController extends Controller
         return response()->json($examenes);
     }
 
-   
+
 
     public function saveImages(Request $request)
     {
@@ -68,20 +68,20 @@ class ImageUploadController extends Controller
         $image->paciente = $request->get('paciente');
         $image->comentarios = $request->get('comentarios');
         $image->save();
-        
-        try {
-            $paciente = Personas::select("*")->where("cedula", "=",  $request->get("paciente"))->first();
-            $medico = Personas::select("*")->where("cedula", "=",  $request->get("medico"))->first();
+        if ($request->get("isPaciente")) {
+            try {
+                $paciente = Personas::select("*")->where("cedula", "=",  $request->get("paciente"))->first();
+                $medico = Personas::select("*")->where("cedula", "=",  $request->get("medico"))->first();
 
-            $nombPac = $paciente["nombre"] . " " . $paciente["apellido"];
-            $accion = "Publico un nuevo examen en relacion a su seguimiento actual.";
-            $value = "Ingrese a la plataforma para revisar mas detalles.";
+                $nombPac = $paciente["nombre"] . " " . $paciente["apellido"];
+                $accion = "Publico un nuevo examen en relacion a su seguimiento actual.";
+                $value = "Ingrese a la plataforma para revisar mas detalles.";
 
-            Mail::to($medico["correo"])->send(new NotificationMail($nombPac, $accion, $value));
-        } catch (\Exception $e) {
-            $this->Log("[saveExamen]: Fallo envio de correo.");
+                Mail::to($medico["correo"])->send(new NotificationMail($nombPac, $accion, $value));
+            } catch (\Exception $e) {
+                $this->Log("[saveExamen]: Fallo envio de correo.");
+            }
         }
-
 
         return response()->json($image, 200);
     }
