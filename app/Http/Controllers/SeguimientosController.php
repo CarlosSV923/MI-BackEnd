@@ -110,7 +110,7 @@ class SeguimientosController extends Controller
         // $seguimiento -> fecha_fin = $request -> get('fecha_fin');
         $seguimiento -> paciente = $request -> get('paciente');
         $seguimiento -> medico = $request -> get('medico');
-        $seguimiento -> estado = 'Activo';
+        $seguimiento -> estado = 'P';
         $seguimiento->save();
         
         return response()->json($seguimiento, 200);
