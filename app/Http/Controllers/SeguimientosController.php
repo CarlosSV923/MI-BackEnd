@@ -112,7 +112,6 @@ class SeguimientosController extends Controller
         $seguimiento -> medico = $request -> get('medico');
         $seguimiento -> estado = 'P';
         $seguimiento->save();
-        
         return response()->json($seguimiento, 200);
     }
     
