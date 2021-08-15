@@ -161,6 +161,44 @@ class CitasController extends Controller
         return response()->json($query->get(), 200);
     }
 
+    public function getCitasCuidador(Request $request)
+    {
+        $cedula =  $request->get("cedula");
+        $dateMin = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_min"));
+        $dateMax = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max"));
+
+        if (empty($cedula) ||  empty($dateMax) || empty($dateMin)) {
+            return response()->json(['log' => 'error'], 400);
+        }
+
+        $query = Citas::select(
+            'citas.id_cita as id',
+            'citas.estado as estado',
+            'citas.init_comment as desc',
+            'citas.inicio_cita as start',
+            'citas.fin_cita as end',
+            'medicos.nombre as nombre',
+            'medicos.apellido as apellido',
+            'medicos.cedula as cedula',
+            'medicos.apellido as apellido',
+            'especialidades.nombre as especialidad'
+
+        )
+            
+            ->join("paciente_cuidador", "paciente_cuidador.paciente", "=", "cita.paciente")
+            ->join("personas as medicos", "medicos.cedula", "=", "citas.medico")
+            ->join("medico_especialidad", "medico_especialidad.medico", "=", "medicos.cedula")
+            ->join("especialidades", "especialidades.id_especialidad", "=", "medico_especialidad.especialidad")
+
+            ->where("paciente_cuidador.cuidador", "=", $cedula)
+            ->where("citas.inicio_cita", "<=", $dateMax)
+            ->where("citas.inicio_cita", ">=", $dateMin);
+        $this->Log(json_encode($query->get()));
+        return response()->json($query->get(), 200);
+    }
+
+    
+
     public function reangedarCancelarCita(Request $request)
     {
         $cita = Citas::where("id_cita", "=", $request->get("id"));

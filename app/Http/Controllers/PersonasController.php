@@ -19,9 +19,43 @@ class PersonasController extends Controller
             'roles.nombre as rol',
             'users.username as username',
         )
+        
             ->join('users', 'users.cedula', '=', 'personas.cedula')
             ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
             ->Where('roles.nombre', 'like', "%Paciente%");
+
+        $query->Where(function ($query) use ($filter) {
+
+            $query = $query->where('personas.cedula', 'like', "%" . $filter . "%");
+
+            $query = $query->orWhere('personas.nombre', 'like', "%" . $filter . "%");
+
+            $query = $query->orWhere('personas.apellido', 'like', "%" . $filter . "%");
+
+            return $query;
+        });
+
+
+        return response()->json($query->get(), 200);
+    }
+
+    public function getPacientesCuidadorFilter(Request $request)
+    {
+        $filter =  $request->get("filter");
+        $cuidador =  $request->get("cuidador");
+        
+        $query = Personas::select(
+            'personas.cedula',
+            'personas.nombre',
+            'personas.apellido',
+            'roles.nombre as rol',
+            'users.username as username',
+        )
+            ->join('paciente_cuidador', 'paciente_cuidador.paciente', '=', 'personas.cedula')
+            ->join('users', 'users.cedula', '=', 'personas.cedula')
+            ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
+            ->Where('roles.nombre', 'like', "%Paciente%");
+            ->Where('paciente_cuidador.cuidador', '=', $cuidador);
 
         $query->Where(function ($query) use ($filter) {
 

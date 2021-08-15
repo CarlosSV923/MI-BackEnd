@@ -18,6 +18,8 @@ Route::post('/getExFilter', 'CitasController@getExFilter');
 
 Route::post('/getPacientesFilter', 'PersonasController@getPacientesFilter');
 
+Route::post('/getPacientesCuidadorFilter', 'PersonasController@getPacientesCuidadorFilter');
+
 Route::post('/getMedicosFilter', 'PersonasController@getMedicosFilter');
 
 Route::post('/agendarCita', 'CitasController@agendarCita');
@@ -35,6 +37,8 @@ Route::post('/getAllSeguimientos', 'SeguimientosController@getAllSeguimientos');
 Route::post('/getCitasReporte', 'CitasController@getCitasReporte');
 
 Route::post('/getCitasMedico', 'CitasController@getCitasMedico');
+
+Route::post('/getCitasCuidador', 'CitasController@getCitasCuidador');
 
 Route::post('/getCitasSeg', 'CitasController@getCitasSeg');
 
