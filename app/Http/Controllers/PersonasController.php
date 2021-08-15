@@ -116,7 +116,7 @@ class PersonasController extends Controller
         $paciente =  $request->get("paciente");
         $cuidador =  $request->get("cuidador");
 
-        $pc = new PacienteCuidador()
+        $pc = new PacienteCuidador();
         $pc->paciente = $paciente;
         $pc->cuidador = $cuidador;
         $pc->save();
