@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Personas;
+use App\Models\PacienteCuidador;
 
 class PersonasController extends Controller
 {
@@ -48,6 +49,7 @@ class PersonasController extends Controller
             'personas.cedula',
             'personas.nombre',
             'personas.apellido',
+            'personas.correo',
             'roles.nombre as rol',
             'users.username as username',
         )
@@ -106,5 +108,27 @@ class PersonasController extends Controller
 
 
         return response()->json($query->get(), 200);
+    }
+
+
+    public function savePacienteAsociadoCuidador(Request $request){
+        
+        $paciente =  $request->get("paciente");
+        $cuidador =  $request->get("cuidador");
+
+        $pc = new PacienteCuidador()
+        $pc->paciente = $paciente;
+        $pc->cuidador = $cuidador;
+        $pc->save();
+
+        return response()->json($pc, 200);
+    }
+
+    public function deletePacienteAsociadoCuidador(Request $request){
+
+        $exam = PacienteCuidador::select("*")->where("examenes.id_examen", "=", $request->get("id_paciente_cuidador"));
+
+        $exam->delete();
+        return response()->json(["log" => "exito"], 200);   
     }
 }

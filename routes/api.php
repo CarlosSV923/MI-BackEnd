@@ -20,6 +20,10 @@ Route::post('/getPacientesFilter', 'PersonasController@getPacientesFilter');
 
 Route::post('/getPacientesCuidadorFilter', 'PersonasController@getPacientesCuidadorFilter');
 
+Route::post('/savePacienteAsociadoCuidador', 'PersonasController@savePacienteAsociadoCuidador');
+
+Route::post('/deletePacienteAsociadoCuidador', 'PersonasController@deletePacienteAsociadoCuidador');
+
 Route::post('/getMedicosFilter', 'PersonasController@getMedicosFilter');
 
 Route::post('/agendarCita', 'CitasController@agendarCita');
