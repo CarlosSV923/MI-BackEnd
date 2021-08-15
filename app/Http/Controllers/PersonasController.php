@@ -54,7 +54,7 @@ class PersonasController extends Controller
             ->join('paciente_cuidador', 'paciente_cuidador.paciente', '=', 'personas.cedula')
             ->join('users', 'users.cedula', '=', 'personas.cedula')
             ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
-            ->Where('roles.nombre', 'like', "%Paciente%");
+            ->Where('roles.nombre', 'like', "%Paciente%")
             ->Where('paciente_cuidador.cuidador', '=', $cuidador);
 
         $query->Where(function ($query) use ($filter) {
