@@ -72,6 +72,7 @@ class SeguimientosController extends Controller
         $dateMax = $request->get("date_max") != null ? Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max")) : null;
         $paciente = $request->get("paciente");
         $medico = $request->get("medico");
+        $cuidador = $request->get("cuidador");
 
         $seguimientos = Seguimientos::select(
             "seguimientos.id_seguimiento as id_seguimiento",
@@ -97,8 +98,10 @@ class SeguimientosController extends Controller
         if (!empty($medico)) {
             $seguimientos = $seguimientos->where("seguimientos.medico", "=", $medico);
         }
-        if (!empty($paciente)) {
-            $seguimientos = $seguimientos->where("seguimientos.paciente", "=", $paciente);
+        if (!empty($cuidador)) {
+            $seguimientos = $seguimientos
+                                ->join("cuidador_seguimiento","cuidador_seguimiento.seguimiento" ,"=", "seguimientos.id_seguimiento")
+                                ->where("cuidador_seguimiento.cuidador", "=", $cuidador);
         }
 
         return response()->json($seguimientos->get(), 200);
