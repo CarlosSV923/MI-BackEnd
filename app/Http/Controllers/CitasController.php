@@ -177,16 +177,19 @@ class CitasController extends Controller
             'citas.init_comment as desc',
             'citas.inicio_cita as start',
             'citas.fin_cita as end',
-            'medicos.nombre as nombre',
-            'medicos.apellido as apellido',
-            'medicos.cedula as cedula',
-            'medicos.apellido as apellido',
+            'medicos.nombre as nombreMedico',
+            'medicos.apellido as apellidoMedico',
+            'medicos.cedula as cedulaMedico',
+            'pacientes.apellido as apellidoPaciente',
+            'pacientes.nombre as nombrePaciente',
+            'pacientes.cedula as cedulaPaciente',
             'especialidades.nombre as especialidad'
 
         )
             
             ->join("paciente_cuidador", "paciente_cuidador.paciente", "=", "citas.paciente")
             ->join("personas as medicos", "medicos.cedula", "=", "citas.medico")
+            ->join("personas as pacientes", "pacientes.cedula", "=", "citas.paciente")
             ->join("medico_especialidad", "medico_especialidad.medico", "=", "medicos.cedula")
             ->join("especialidades", "especialidades.id_especialidad", "=", "medico_especialidad.especialidad")
 
