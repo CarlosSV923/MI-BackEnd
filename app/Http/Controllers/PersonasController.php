@@ -194,9 +194,9 @@ class PersonasController extends Controller
     public function deletePacienteAsociadoCuidador(Request $request){
         $paciente =  $request->get("paciente");
         $cuidador =  $request->get("cuidador");
-        $exam = PacienteCuidador::select("*")->where("cuidador", "=", $cuidador)->where("paciente", "=", $paciente);
+        $reg = PacienteCuidador::select("*")->where("cuidador", "=", $cuidador)->where("paciente", "=", $paciente);
 
-        $exam->delete();
+        $reg->delete();
         return response()->json(["log" => "exito"], 200);   
     }
 }

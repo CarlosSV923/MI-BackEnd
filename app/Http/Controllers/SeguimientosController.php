@@ -98,6 +98,9 @@ class SeguimientosController extends Controller
         if (!empty($medico)) {
             $seguimientos = $seguimientos->where("seguimientos.medico", "=", $medico);
         }
+        if (!empty($paciente)) {
+            $seguimientos = $seguimientos->where("seguimientos.paciente", "=", $paciente);
+        }
         if (!empty($cuidador)) {
             $seguimientos = $seguimientos
                                 ->join("cuidador_seguimiento","cuidador_seguimiento.seguimiento" ,"=", "seguimientos.id_seguimiento")
