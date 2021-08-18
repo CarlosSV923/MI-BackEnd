@@ -154,3 +154,10 @@ Route::post('mostrar_informacion_expediente', 'UsersController@mostrar_informaci
 Route::post('mostrar_informacion_cita_paciente', 'UsersController@mostrar_informacion_cita_paciente');
 Route::post('usuarios', 'UsersController@usuarios');
 Route::post('pacientes', 'UsersController@pacientes');
+
+/* API personas */
+Route::post('/pacientes_cuidador', 'PersonasController@pacientes_cuidador');
+Route::get('/all_cui', 'PersonasController@all_cuidadores');
+Route::get('/pacientes_asociar', 'PersonasController@pacientes_asociar');
+Route::post('/cuidadores_de_paciente', 'PersonasController@cuidadores_de_paciente');
+Route::post('/asignar_seguimiento_cuidador', 'PersonasController@asignar_seguimiento_cuidador');
