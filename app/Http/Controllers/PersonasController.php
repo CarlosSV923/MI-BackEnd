@@ -142,6 +142,38 @@ class PersonasController extends Controller
 
     }
 
+    public function cuidadores_paciente(Request $request){
+        
+        $cedula= $request->get("cedula_cuidador");
+
+        $query = Personas::select(
+            'personas.cedula',
+            'personas.nombre',
+            'personas.apellido',
+            'personas.correo',
+            'roles.nombre as rol',
+            'users.username as username',
+        )
+        ->join('paciente_cuidador', 'paciente_cuidador.cuidador', '=', 'personas.cedula')
+        ->join('users', 'users.cedula', '=', 'personas.cedula')
+        ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
+        ->Where('roles.nombre', 'like', "%Cuidador%")
+        ->Where('paciente_cuidador.paciente', '=', $request->get("cedula_paciente"));
+
+        if (!empty($cedula)){
+            $query= $query->where('personas.cedula','like','%'.$cedula.'%');
+        }
+                
+        $itemSize = $query->count();
+        
+        $query->orderBy('personas.created_at', 'desc');
+        // return response()->json($query->get());
+        // $query->orderBy('personas.created_at', 'asc');
+        $query= $query->limit($request->get("page_size"))->offset($request->get("page_size") * $request->get("page_index")); 
+        return response()->json(["resp" => $query->get(), "itemSize" => $itemSize])->header("itemSize", $itemSize);
+
+    }
+
     public function all_cuidadores (){
         return PacienteCuidador::all();
     }
@@ -249,6 +281,22 @@ class PersonasController extends Controller
         ->join("personas", "personas.cedula", '=', "users.cedula")
         ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
         ->where('roles.id_rol', '=', 2)
+        ->get();
+        
+        return response()->json($query);
+
+    }
+
+    public function cuidadores_asociar(Request $request){
+        $query= Users::select(
+            // "users.username as usuario",
+            "personas.cedula as cedula",
+            "personas.nombre as nombre",
+            "personas.apellido as apellido",
+            )
+        ->join("personas", "personas.cedula", '=', "users.cedula")
+        ->join('roles', 'roles.id_rol', '=', 'users.id_rol')
+        ->where('roles.id_rol', '=', 4)
         ->get();
         
         return response()->json($query);
