@@ -82,7 +82,7 @@ class CitasController extends Controller
         $dateMax = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max"));
 
 
-        if (empty($cedula) ||  empty($dateMax) || empty($dateMin)) {
+        if (empty($cedula)) {
             return response()->json(['log' => 'error'], 400);
         }
 
@@ -97,15 +97,22 @@ class CitasController extends Controller
             'pacientes.cedula as cedula',
         )
             ->join("personas as pacientes", "pacientes.cedula", "=", "citas.paciente")
-            ->where("citas.medico", "=", $cedula)
-            ->where("citas.inicio_cita", "<=", $dateMax)
-            ->where("citas.inicio_cita", ">=", $dateMin);
+            ->where("citas.medico", "=", $cedula);
+            
         if (!empty($paciente)) {
             $query = $query->where("citas.paciente", "=", $paciente);
+        }
+        if (!empty($dateMax)) {
+            $query = $query->where("citas.inicio_cita", "<=", $dateMax);
+        }
+        if (!empty($dateMin)) {
+            $query = $query->where("citas.inicio_cita", ">=", $dateMin);
         }
 
         return response()->json($query->get(), 200);
     }
+
+   
 
     public function getCitasSeg(Request $request)
     {
