@@ -121,7 +121,7 @@ class CitasController extends Controller
         $dateMax = $request->get("date_max") != null ? Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max")) : null;
 
 
-        if (empty($seg) ||  empty($dateMax) || empty($dateMin)) {
+        if (empty($seg)) {
             return response()->json(['log' => 'error'], 400);
         }
 
@@ -140,7 +140,7 @@ class CitasController extends Controller
         $dateMin = $request->get("date_min") != null ? Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_min")) : null;
         $dateMax = $request->get("date_max") != null ? Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max")) : null;
 
-        if (empty($cedula) ||  empty($dateMax) || empty($dateMin)) {
+        if (empty($cedula)) {
             return response()->json(['log' => 'error'], 400);
         }
 
@@ -179,7 +179,7 @@ class CitasController extends Controller
         $dateMin = $request->get("date_min") != null ? Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_min")) : null;
         $dateMax = $request->get("date_max") != null ? Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max")) : null;
 
-        if (empty($cedula) ||  empty($dateMax) || empty($dateMin)) {
+        if (empty($cedula)) {
             return response()->json(['log' => 'error'], 400);
         }
 
