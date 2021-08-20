@@ -78,8 +78,8 @@ class CitasController extends Controller
     {
         $cedula =  $request->get("cedula");
         $paciente =  $request->get("paciente");
-        $dateMin = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_min"));
-        $dateMax = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max"));
+        $dateMin = $request->get("date_min") != null ? Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_min")) : null;
+        $dateMax = $request->get("date_max") != null ? Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max")) : null;
 
 
         if (empty($cedula)) {
@@ -117,8 +117,8 @@ class CitasController extends Controller
     public function getCitasSeg(Request $request)
     {
         $seg =  $request->get("id_seguimiento");
-        $dateMin = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_min"));
-        $dateMax = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max"));
+        $dateMin = $request->get("date_min") != null ? Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_min")) : null;
+        $dateMax = $request->get("date_max") != null ? Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max")) : null;
 
 
         if (empty($seg) ||  empty($dateMax) || empty($dateMin)) {
@@ -137,8 +137,8 @@ class CitasController extends Controller
     public function getCitasPaciente(Request $request)
     {
         $cedula =  $request->get("cedula");
-        $dateMin = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_min"));
-        $dateMax = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max"));
+        $dateMin = $request->get("date_min") != null ? Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_min")) : null;
+        $dateMax = $request->get("date_max") != null ? Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max")) : null;
 
         if (empty($cedula) ||  empty($dateMax) || empty($dateMin)) {
             return response()->json(['log' => 'error'], 400);
@@ -161,9 +161,14 @@ class CitasController extends Controller
             ->join("medico_especialidad", "medico_especialidad.medico", "=", "medicos.cedula")
             ->join("especialidades", "especialidades.id_especialidad", "=", "medico_especialidad.especialidad")
 
-            ->where("citas.paciente", "=", $cedula)
-            ->where("citas.inicio_cita", "<=", $dateMax)
-            ->where("citas.inicio_cita", ">=", $dateMin);
+            ->where("citas.paciente", "=", $cedula);
+
+            if (!empty($dateMax)) {
+                $query = $query->where("citas.inicio_cita", "<=", $dateMax);
+            }
+            if (!empty($dateMin)) {
+                $query = $query->where("citas.inicio_cita", ">=", $dateMin);
+            }
         $this->Log(json_encode($query->get()));
         return response()->json($query->get(), 200);
     }
@@ -171,8 +176,8 @@ class CitasController extends Controller
     public function getCitasCuidador(Request $request)
     {
         $cedula =  $request->get("cedula");
-        $dateMin = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_min"));
-        $dateMax = Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max"));
+        $dateMin = $request->get("date_min") != null ? Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_min")) : null;
+        $dateMax = $request->get("date_max") != null ? Carbon::createFromFormat('Y-m-d\TH:i:s+', $request->get("date_max")) : null;
 
         if (empty($cedula) ||  empty($dateMax) || empty($dateMin)) {
             return response()->json(['log' => 'error'], 400);
@@ -200,9 +205,13 @@ class CitasController extends Controller
             ->join("medico_especialidad", "medico_especialidad.medico", "=", "medicos.cedula")
             ->join("especialidades", "especialidades.id_especialidad", "=", "medico_especialidad.especialidad")
 
-            ->where("paciente_cuidador.cuidador", "=", $cedula)
-            ->where("citas.inicio_cita", "<=", $dateMax)
-            ->where("citas.inicio_cita", ">=", $dateMin);
+            ->where("paciente_cuidador.cuidador", "=", $cedula);
+            if (!empty($dateMax)) {
+                $query = $query->where("citas.inicio_cita", "<=", $dateMax);
+            }
+            if (!empty($dateMin)) {
+                $query = $query->where("citas.inicio_cita", ">=", $dateMin);
+            }
         $this->Log(json_encode($query->get()));
         return response()->json($query->get(), 200);
     }
