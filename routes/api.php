@@ -74,6 +74,9 @@ Route::post('/almacenar_cita', 'CitasController@almacenar_cita');
 Route::post('/actualizar_cita', 'CitasController@actualizar_cita');
 Route::post('/informacion', 'CitasController@informacion');
 Route::get('/info_paciente/{cedula}', 'CitasController@info_paciente');
+Route::post('/citas_recordatorios_medico', 'CitasController@citas_recordatorios_medico');
+Route::post('/citas_recordatorios_paciente', 'CitasController@citas_recordatorios_paciente');
+Route::post('/citas_recordatorios_cuidador', 'CitasController@citas_recordatorios_cuidador');
 
 /* API discapacidades */
 Route::get('/mostrar_discapacidades', 'DiscapacidadController@mostrar_discapacidades');
