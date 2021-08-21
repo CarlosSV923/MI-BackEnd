@@ -86,7 +86,7 @@ class CitasController extends Controller
             'pacientes.cedula as cedula',
         )
             ->join("personas as pacientes", "pacientes.cedula", "=", "citas.paciente")
-            ->where("citas.id_cita", "=", $query->get("id"));
+            ->where("citas.id_cita", "=", $request->get("id"));
         
             return response()->json($query->first(), 200);
     }
