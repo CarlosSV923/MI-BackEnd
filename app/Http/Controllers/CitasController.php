@@ -170,7 +170,6 @@ class CitasController extends Controller
         if (empty($cedula) ||  empty($dateMax) || empty($dateMin)) {
             return response()->json(['log' => 'error'], 400);
         }
-
         $query = Citas::select(
             'citas.id_cita as id',
             'citas.estado as estado',
@@ -196,6 +195,7 @@ class CitasController extends Controller
             ->where("paciente_cuidador.cuidador", "=", $cedula)
             ->where("citas.inicio_cita", "<=", $dateMax)
             ->where("citas.inicio_cita", ">=", $dateMin);
+
         $this->Log(json_encode($query->get()));
         return response()->json($query->get(), 200);
     }
@@ -472,6 +472,101 @@ class CitasController extends Controller
         }
 
         return response()->json($arrResp, 200);
+    }
+
+    public function citas_recordatorios_medico(Request $request){
+
+        // $fecha_inicio = now()->format('Y-m-d H H:i:s');
+        // $fecha_fin = now()->addDays(90)->format('Y-m-d');
+        // $hora1 = now() ->format('H:i:s');
+        // $hora2 = now() ->addDays(30) ->format('H:i:s');
+        $fecha_inicio = (now()->format('Y-m-d')).' 00:00:00';
+        $fecha_fin = (now()->format('Y-m-d')).' 23:59:59';
+       
+        $citas_medico = Citas::select(
+            'citas.id_cita as id',
+            'citas.estado as estado',
+            'citas.init_comment as desc',
+            'citas.inicio_cita as start',
+            'citas.fin_cita as end',
+            'pacientes.nombre as nombre',
+            'pacientes.apellido as apellido',
+            'pacientes.cedula as cedula',
+        )
+        ->join("personas as pacientes", "pacientes.cedula", "=", "citas.paciente")
+        ->where("citas.medico", "=", $request->get('cedula'))
+        ->whereBetween('citas.inicio_cita', [$fecha_inicio, $fecha_fin])
+        ->where("citas.estado", "=", 'P')
+        ->orderBy('citas.inicio_cita', 'asc')
+        ->get();
+        return response() -> json($citas_medico);
+    }
+
+    public function citas_recordatorios_paciente(Request $request){
+
+        // $fecha_inicio = now()->format('Y-m-d H H:i:s');
+        // $fecha_fin = now()->addDays(90)->format('Y-m-d');
+        // $hora1 = now() ->format('H:i:s');
+        // $hora2 = now() ->addDays(30) ->format('H:i:s');
+        $fecha_inicio = (now()->format('Y-m-d')).' 00:00:00';
+        $fecha_fin = (now()->format('Y-m-d')).' 23:59:59';
+        $citas_paciente = Citas::select(
+            'citas.id_cita as id',
+            'citas.estado as estado',
+            'citas.init_comment as desc',
+            'citas.inicio_cita as start',
+            'citas.fin_cita as end',
+            'medicos.nombre as nombre',
+            'medicos.apellido as apellido',
+            'medicos.cedula as cedula',
+            'medicos.apellido as apellido',
+            'especialidades.nombre as especialidad'
+        )
+        ->join("personas as medicos", "medicos.cedula", "=", "citas.medico")
+        ->join("medico_especialidad", "medico_especialidad.medico", "=", "medicos.cedula")
+        ->join("especialidades", "especialidades.id_especialidad", "=", "medico_especialidad.especialidad")        
+        ->where("citas.paciente", "=", $request->get('cedula'))
+        ->whereBetween('citas.inicio_cita', [$fecha_inicio, $fecha_fin])
+        ->where("citas.estado", "=", 'P')
+        ->orderBy('citas.inicio_cita', 'asc')
+        ->get();
+        return response() -> json($citas_paciente);
+    }
+
+    public function citas_recordatorios_cuidador(Request $request){
+
+        // $fecha_inicio = now()->format('Y-m-d H H:i:s');
+        // $fecha_fin = now()->addDays(90)->format('Y-m-d');
+        // $hora1 = now() ->format('H:i:s');
+        // $hora2 = now() ->addDays(30) ->format('H:i:s');
+
+        $fecha_inicio = (now()->format('Y-m-d')).' 00:00:00';
+        $fecha_fin = (now()->format('Y-m-d')).' 23:59:59';
+        $citas_cuidador = Citas::select(
+            'citas.id_cita as id',
+            'citas.estado as estado',
+            'citas.init_comment as desc',
+            'citas.inicio_cita as start',
+            'citas.fin_cita as end',
+            'medicos.nombre as nombreMedico',
+            'medicos.apellido as apellidoMedico',
+            'medicos.cedula as cedulaMedico',
+            'pacientes.apellido as apellidoPaciente',
+            'pacientes.nombre as nombrePaciente',
+            'pacientes.cedula as cedulaPaciente',
+            'especialidades.nombre as especialidad'
+        )
+        ->join("paciente_cuidador", "paciente_cuidador.paciente", "=", "citas.paciente")
+        ->join("personas as medicos", "medicos.cedula", "=", "citas.medico")
+        ->join("personas as pacientes", "pacientes.cedula", "=", "citas.paciente")
+        ->join("medico_especialidad", "medico_especialidad.medico", "=", "medicos.cedula")
+        ->join("especialidades", "especialidades.id_especialidad", "=", "medico_especialidad.especialidad")        
+        ->where("paciente_cuidador.cuidador", "=", $request->get('cedula'))
+        ->whereBetween('citas.inicio_cita', [$fecha_inicio, $fecha_fin])
+        ->where("citas.estado", "=", 'P')
+        ->orderBy('citas.inicio_cita', 'asc')
+        ->get();
+        return response() -> json($citas_cuidador);
     }
 
     public function getExFilter(Request $request)
