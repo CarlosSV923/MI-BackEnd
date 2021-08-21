@@ -78,14 +78,25 @@ class CitasController extends Controller
         $query = Citas::select(
             'citas.id_cita as id',
             'citas.estado as estado',
-            'citas.init_comment as desc',
+            'citas.init_comment as init_comment',
+            'citas.inicio_cita as date',
             'citas.inicio_cita as start',
             'citas.fin_cita as end',
-            'pacientes.nombre as nombre',
-            'pacientes.apellido as apellido',
-            'pacientes.cedula as cedula',
+            'medicos.nombre as nombreMedico',
+            'medicos.apellido as apellidoMedico',
+            'medicos.cedula as medico',
+            'pacientes.apellido as apellidoPaciente',
+            'pacientes.nombre as nombrePaciente',
+            'pacientes.cedula as paciente',
+            'especialidades.nombre as especialidad'
+
         )
+            
+            ->join("paciente_cuidador", "paciente_cuidador.paciente", "=", "citas.paciente")
+            ->join("personas as medicos", "medicos.cedula", "=", "citas.medico")
             ->join("personas as pacientes", "pacientes.cedula", "=", "citas.paciente")
+            ->join("medico_especialidad", "medico_especialidad.medico", "=", "medicos.cedula")
+            ->join("especialidades", "especialidades.id_especialidad", "=", "medico_especialidad.especialidad")
             ->where("citas.id_cita", "=", $request->get("id"));
         
             return response()->json($query->first(), 200);
