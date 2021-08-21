@@ -91,8 +91,6 @@ class CitasController extends Controller
             'especialidades.nombre as especialidad'
 
         )
-            
-            ->join("paciente_cuidador", "paciente_cuidador.paciente", "=", "citas.paciente")
             ->join("personas as medicos", "medicos.cedula", "=", "citas.medico")
             ->join("personas as pacientes", "pacientes.cedula", "=", "citas.paciente")
             ->join("medico_especialidad", "medico_especialidad.medico", "=", "medicos.cedula")
