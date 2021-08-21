@@ -34,6 +34,8 @@ Route::post('/agendarCita', 'CitasController@agendarCita');
 
 Route::post('/agendarCitaAsociada', 'CitasController@agendarCitaAsociada');
 
+Route::post('/getCitaByID', 'CitasController@getCitaByID');
+
 Route::post('/getSeguimientoData', 'SeguimientosController@getSeguimientoData');
 
 Route::post('/finalizarSeguimiento', 'SeguimientosController@finalizarSeguimiento');

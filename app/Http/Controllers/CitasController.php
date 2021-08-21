@@ -74,6 +74,23 @@ class CitasController extends Controller
         return response()->json(['log' => 'exito'], 200);
     }
 
+    public function getCitaByID(Request $request){
+        $query = Citas::select(
+            'citas.id_cita as id',
+            'citas.estado as estado',
+            'citas.init_comment as desc',
+            'citas.inicio_cita as start',
+            'citas.fin_cita as end',
+            'pacientes.nombre as nombre',
+            'pacientes.apellido as apellido',
+            'pacientes.cedula as cedula',
+        )
+            ->join("personas as pacientes", "pacientes.cedula", "=", "citas.paciente")
+            ->where("citas.id_cita", "=", $query->get("id"));
+        
+            return response()->json($query->first(), 200);
+    }
+
     public function getCitasMedico(Request $request)
     {
         $cedula =  $request->get("cedula");
