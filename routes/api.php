@@ -107,6 +107,7 @@ Route::post('/almacenar_enfermedades_persistentes_paciente', 'EnfermedadPersiste
 /* API infoMedica signos vitales */
 Route::get('/mostrar_signos_vitales', 'InfoMedicaController@mostrar_signos_vitales');
 Route::post('/saveSignoVital', 'InfoMedicaController@saveSignoVital');
+Route::post('/getInfoMedicaByID', 'InfoMedicaController@getInfoMedicaByID');
 Route::post('/editSignoVital', 'InfoMedicaController@editSignoVital');
 Route::post('/deleteSignoVital', 'InfoMedicaController@deleteSignoVital');
 Route::post('/almacenar_signos_vitales_paciente', 'InfoMedicaController@almacenar_signos_vitales_paciente');
