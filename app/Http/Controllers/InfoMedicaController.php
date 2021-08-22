@@ -87,7 +87,7 @@ class InfoMedicaController extends Controller
     }
 
     public function getInfoMedicaByID(Request $request){
-        $sig = InfoMedica::find($request->get("id_info_medica"));
+        $sig = InfoMedica::find($request->get("id"));
         return response()->json($sig, 200);
     }   
 }
