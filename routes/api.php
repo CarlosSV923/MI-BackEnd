@@ -63,6 +63,7 @@ Route::post('/login', 'UsersController@login');
 Route::post('/upload/images', 'ImageUploadController@uploadImages');
 Route::post('/saveImages', 'ImageUploadController@saveImages');
 
+Route::post('/getExamenByID', 'ImageUploadController@getExamenByID');
 Route::post('/saveExamen', 'ImageUploadController@saveExamen');
 Route::post('/editExamen', 'ImageUploadController@editExamen');
 Route::post('/deleteExamen', 'ImageUploadController@deleteExamen');

@@ -117,4 +117,10 @@ class ImageUploadController extends Controller
         $exam->delete();
         return response()->json(["log" => "exito"], 200);
     }
+
+    public function getExamenByID(Request $request){
+        $exam = Examenes::select("*")->where("examenes.id_examen", "=", $request->get("id_examen"));
+
+        return response()->json($exam->get() , 200);
+    }
 }
