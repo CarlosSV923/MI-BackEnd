@@ -13,10 +13,16 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Models\EnfermedadesHereditarias;
 use App\Models\DiscapacidadPaciente;
+use App\Models\Discapacidades;
 use App\Models\Alergias;
 use App\Models\EnfermedadesPersistentes;
 use App\Models\Users;
 use App\Mail\NotificationMail;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
+use App\Models\InfoMedica;
+use App\Models\EnfermedadesCitas;
+use App\Models\MedicamentosCitas;
 
 class CitasController extends Controller
 {
@@ -602,4 +608,173 @@ class CitasController extends Controller
 
         return response()->json($ex->get(), 200);
     }
+
+    public function guardar_cita(Request $request){
+
+        DB::beginTransaction();
+
+        try{
+
+            // if ($request->get("planTratam")===null){
+            //     print_r("NULL");
+            //     return;
+            // }
+            
+            $cita = Citas::where("id_cita", "=", $request->get("id_cita"));
+            $cita->update([
+                "estado" => $request->get("estado"),
+                "observRec" => $request->get("observRec"),
+                "planTratam" => $request->get("planTratam"),
+                "instrucciones" => $request->get("instrucciones"),
+                "sintomas" => $request->get("sintomas"),
+                "fecha_atencion" => $request->get("fecha_atencion"),
+                "seguimiento" => $request->get("seguimiento"),
+            ]);
+
+            $lista_discapacidades = $request -> get('discapacidades_agregadas_manualmente');
+            $array = [];
+            //devuelve los id que se guardaron
+            for ($i = 0; $i < count($lista_discapacidades); $i++){
+                $ultimo_id = Discapacidades::latest('id_discapacidad')->first()->id_discapacidad;
+                $discapacidades = new Discapacidades();
+                $discapacidades->nombre = $lista_discapacidades[$i]['nombre'];
+                $discapacidades->codigo = 'DISCAP'.($ultimo_id+1);
+                $discapacidades->save();
+                array_push($array, $discapacidades->id_discapacidad);
+            }
+
+            //Esos ids los debo usar
+            $lista_discapacidades_paciente = $request -> get('discapacidades_seleccionadas');
+            for ($i = 0; $i < count($lista_discapacidades_paciente); $i++){
+                $discapacidad_paciente = new DiscapacidadPaciente();
+                $data = $lista_discapacidades_paciente[$i];
+                // $discapacidad_paciente->paciente = $data -> paciente
+                $discapacidad_paciente->paciente =$request -> get('paciente');
+                //$discapacidad_paciente->descrip = $data['descrip'];
+                $discapacidad_paciente->discapacidad = $data['discapacidad'];
+                $discapacidad_paciente -> save();
+            }
+
+
+            DB::commit();
+            return response()->json(['log' => 'exito'], 200);
+        }catch(Exception $e){
+            DB::rollback();
+            return response()->json(['log' => $e], 400);
+        }
+        
+    }
+
+    public function guardar_cita2(Request $request){
+
+        $lista_discapacidades = $request -> get('discapacidades_agregadas_manualmente');
+        $lista_discapacidades_paciente = $request -> get('discapacidades_seleccionadas');
+        for ($i = 0; $i < count($lista_discapacidades); $i++){
+            $ultimo_id = Discapacidades::latest('id_discapacidad')->first()->id_discapacidad;
+            $discapacidades = new Discapacidades();
+            $discapacidades->nombre = $lista_discapacidades[$i]['nombre'];
+            $discapacidades->codigo = 'DISCAP'.($ultimo_id+1);
+            $discapacidades->save();
+            $discapacidad_paciente = new DiscapacidadPaciente();
+            $discapacidad_paciente->paciente =$request -> get('paciente');
+            $discapacidad_paciente->discapacidad = $discapacidades->id_discapacidad;
+            $discapacidad_paciente -> save();
+        }
+        
+        for ($i = 0; $i < count($lista_discapacidades_paciente); $i++){
+            $discapacidad_paciente = new DiscapacidadPaciente();
+            $data = $lista_discapacidades_paciente[$i];
+            $discapacidad_paciente->paciente =$request -> get('paciente');
+            $discapacidad_paciente->discapacidad = $lista_discapacidades_paciente[$i];
+            $discapacidad_paciente -> save();
+        }
+
+        $lista_alergias = $request -> get('alergias');
+        $lista_alergias = $request -> get('alergias_agregadas_manualmente');
+        $lista_alergias_paciente = $request -> get('alergias_seleccionadas');
+        for ($i = 0; $i < count($lista_alergias); $i++){
+            $ultimo_id = Medicamentos::latest('id_medicamento')->first()->id_medicamento;
+            $alergias = new Medicamentos();
+            $alergias->nombre = $lista_alergias[$i]['nombre'];
+            $alergias->codigo = 'MED'.($ultimo_id+1);
+            $alergias->save();
+            $alergia_paciente = new Alergias();
+            $data = $lista_alergias_paciente[$i];
+            $alergia_paciente->paciente = $request -> get('paciente');
+            $alergia_paciente->medicamento = $alergias->id_medicamento;
+            $alergia_paciente -> save();
+        }
+
+        for ($i = 0; $i < count($lista_alergias_paciente); $i++){
+            $alergia_paciente = new Alergias();
+            $data = $lista_alergias_paciente[$i];
+            $alergia_paciente->paciente = $request -> get('paciente');
+            $alergia_paciente->medicamento = $lista_alergias_paciente[$i];
+            $alergia_paciente -> save();
+        }
+
+        $lista_enfermedades_hereditarias = $request -> get('enfermedades_hereditarias_paciente');
+        for ($i = 0; $i < count($lista_enfermedades_hereditarias); $i++){
+            $enfermedades_hereditarias = new EnfermedadesHereditarias();
+            $data = $lista_enfermedades_hereditarias[$i];
+            $enfermedades_hereditarias->paciente =$request -> get('paciente');
+            $enfermedades_hereditarias->enfermedad = $data['enfermedad'];
+            $enfermedades_hereditarias -> save();
+        }
+
+        $lista_enfermedades_persistentes = $request -> get('enfermedades_persistentes_paciente');
+        for ($i = 0; $i < count($lista_enfermedades_persistentes); $i++){
+            $enfermedades_persistentes = new EnfermedadesPersistentes();
+            $data = $lista_enfermedades_persistentes[$i];
+            $enfermedades_persistentes->paciente =$request -> get('paciente');
+            $enfermedades_persistentes->enfermedad = $data['enfermedad'];
+            $enfermedades_persistentes -> save();
+        }
+
+        $lista_signos_vitales_paciente = $request->get('signos_vitales_paciente');
+        for ($i = 0; $i < count($lista_signos_vitales_paciente); $i++) {
+            $signo_vital = new InfoMedica();
+            $data = $lista_signos_vitales_paciente[$i];
+            $signo_vital->cita = $request->get('id_cita');
+            $signo_vital->seguimiento = $request->get('seguimiento');
+            $signo_vital->key = $data['key'];
+            $signo_vital->value = $data['value'];
+            $signo_vital->unidad = $data['unidad'];
+            $signo_vital->save();
+        }
+
+        $lista_enfermedades_cita = $request -> get('enfermedades_cita_paciente');
+        for ($i = 0; $i < count($lista_enfermedades_cita); $i++){
+            $enfermedades_cita = new EnfermedadesCitas();
+            $data = $lista_enfermedades_cita[$i];
+            $enfermedades_cita->cita =$request -> get('id_cita');
+            $enfermedades_cita->enfermedad = $data['enfermedad'];
+            $enfermedades_cita -> save();
+        }
+        // medicamentos_cita_paciente
+        $lista_medicamentos_cita_paciente = $request -> get('medicamentos_cita_paciente');
+        for ($i = 0; $i < count($lista_medicamentos_cita_paciente); $i++){
+            $medicamentos_citas = new MedicamentosCitas();
+            $data = $lista_medicamentos_cita_paciente[$i];
+            $medicamentos_citas->cita =$request -> get('id_cita');
+            $medicamentos_citas->medicamento = $data['medicamento'];
+            $medicamentos_citas->dosis = $data['dosis'];
+            $medicamentos_citas->frecuencia = $data['frecuencia'];
+            $medicamentos_citas->duracion = $data['duracion'];
+            $medicamentos_citas -> save();
+        }
+
+        $cita = Citas::where("id_cita", "=", $request->get("id_cita"));
+        $cita->update([
+            "estado" => $request->get("estado"),
+            "observRec" => $request->get("observRec"),
+            "planTratam" => $request->get("planTratam"),
+            "instrucciones" => $request->get("instrucciones"),
+            "sintomas" => $request->get("sintomas"),
+            "fecha_atencion" => $request->get("fecha_atencion"),
+            "seguimiento" => $request->get("seguimiento"),
+        ]);
+
+    }
+
 }
