@@ -49,14 +49,28 @@ class ImageUploadController extends Controller
     }
 
     public function subir_examenes(Request $request){
+
+        // $lista_examenes = $request->get('lista_examenes');
+        // return response() -> json($lista_examenes);
+
         $imgs = $request->file('images');
+        // return response() -> json($imgs);
         $this->Log(json_encode($imgs));
         $urls = array();
         foreach ($imgs as $img) {
             $image_url = Cloudinary::upload($img->getRealPath())->getSecurePath();
             array_push($urls, $image_url);
+        }
+        return response() -> json($urls);
+
+        /*
+        for ($i = 0; $i < count($lista_examenes); $i++){
+            $data = $lista_examenes[$i];
+            $image_url = Cloudinary::upload($data->file('image_name')->getRealPath())->getSecurePath();
+
             $image = new Examenes();
-            $image->url_examen = $image_url;
+            $image->url_examen = $request->$image_url;
+            $image->seguimiento = $request->get('seguimiento');
             $image->diagnostico = $request->get('diagnostico');
             $image->tipo_examen = $request->get('tipo_examen');
             $image->medico = $request->get('medico');
@@ -64,32 +78,10 @@ class ImageUploadController extends Controller
             $image->comentarios = $request->get('comentarios');
             $image->cita = $request->get('cita');
             $image->save();
+            //return $image->id_examen;
         }
-
-        return response() -> json($urls);
-
-    }
-
-    public function subir_examenes2(Request $request){
-        $imgs = $request->file('images');
-        $this->Log(json_encode($imgs));
-        $urls = array();
-        foreach ($imgs as $img) {
-            $image_url = Cloudinary::upload($img->getRealPath())->getSecurePath();
-            array_push($urls, $image_url);
-            $image = new Examenes();
-            $image->url_examen = $image_url;
-            $image->diagnostico = $request->get('diagnostico');
-            $image->tipo_examen = $request->get('tipo_examen');
-            $image->medico = $request->get('medico');
-            $image->paciente = $request->get('paciente');
-            $image->comentarios = $request->get('comentarios');
-            $image->cita = $request->get('cita');
-            $image->save();
-        }
-
-        return response() -> json($urls);
-
+        */
+        
     }
 
 
@@ -160,11 +152,5 @@ class ImageUploadController extends Controller
 
         $exam->delete();
         return response()->json(["log" => "exito"], 200);
-    }
-
-    public function getExamenByID(Request $request){
-        $exam = Examenes::::find($request->get("id_examen"));
-
-        return response()->json($exam , 200);
     }
 }

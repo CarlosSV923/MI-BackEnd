@@ -62,6 +62,8 @@ Route::post('/login', 'UsersController@login');
 /* API exámenes */
 Route::post('/upload/images', 'ImageUploadController@uploadImages');
 Route::post('/saveImages', 'ImageUploadController@saveImages');
+Route::post('/subir_examenes', 'ImageUploadController@subir_examenes');
+// subir_examenes
 
 Route::post('/getExamenByID', 'ImageUploadController@getExamenByID');
 Route::post('/saveExamen', 'ImageUploadController@saveExamen');
@@ -78,6 +80,7 @@ Route::get('/info_paciente/{cedula}', 'CitasController@info_paciente');
 Route::post('/citas_recordatorios_medico', 'CitasController@citas_recordatorios_medico');
 Route::post('/citas_recordatorios_paciente', 'CitasController@citas_recordatorios_paciente');
 Route::post('/citas_recordatorios_cuidador', 'CitasController@citas_recordatorios_cuidador');
+Route::post('/guardar_cita2', 'CitasController@guardar_cita2');
 
 /* API discapacidades */
 Route::get('/mostrar_discapacidades', 'DiscapacidadController@mostrar_discapacidades');
