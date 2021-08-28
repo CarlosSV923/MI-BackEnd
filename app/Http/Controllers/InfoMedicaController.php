@@ -85,4 +85,9 @@ class InfoMedicaController extends Controller
         $sig->delete();
         return response()->json(["log" => "exito"], 200);
     }
+
+    public function getInfoMedicaByID(Request $request){
+        $sig = InfoMedica::find($request->get("id"));
+        return response()->json($sig, 200);
+    }   
 }

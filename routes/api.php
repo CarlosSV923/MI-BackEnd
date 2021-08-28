@@ -34,6 +34,8 @@ Route::post('/agendarCita', 'CitasController@agendarCita');
 
 Route::post('/agendarCitaAsociada', 'CitasController@agendarCitaAsociada');
 
+Route::post('/getCitaByID', 'CitasController@getCitaByID');
+
 Route::post('/getSeguimientoData', 'SeguimientosController@getSeguimientoData');
 
 Route::post('/finalizarSeguimiento', 'SeguimientosController@finalizarSeguimiento');
@@ -62,6 +64,8 @@ Route::post('/upload/images', 'ImageUploadController@uploadImages');
 Route::post('/saveImages', 'ImageUploadController@saveImages');
 Route::post('/subir_examenes', 'ImageUploadController@subir_examenes');
 // subir_examenes
+
+Route::post('/getExamenByID', 'ImageUploadController@getExamenByID');
 Route::post('/saveExamen', 'ImageUploadController@saveExamen');
 Route::post('/editExamen', 'ImageUploadController@editExamen');
 Route::post('/deleteExamen', 'ImageUploadController@deleteExamen');
@@ -107,6 +111,7 @@ Route::post('/almacenar_enfermedades_persistentes_paciente', 'EnfermedadPersiste
 /* API infoMedica signos vitales */
 Route::get('/mostrar_signos_vitales', 'InfoMedicaController@mostrar_signos_vitales');
 Route::post('/saveSignoVital', 'InfoMedicaController@saveSignoVital');
+Route::post('/getInfoMedicaByID', 'InfoMedicaController@getInfoMedicaByID');
 Route::post('/editSignoVital', 'InfoMedicaController@editSignoVital');
 Route::post('/deleteSignoVital', 'InfoMedicaController@deleteSignoVital');
 Route::post('/almacenar_signos_vitales_paciente', 'InfoMedicaController@almacenar_signos_vitales_paciente');
