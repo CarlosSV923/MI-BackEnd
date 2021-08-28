@@ -119,8 +119,8 @@ class ImageUploadController extends Controller
     }
 
     public function getExamenByID(Request $request){
-        $exam = Examenes::select("*")->where("examenes.id_examen", "=", $request->get("id_examen"));
+        $exam = Examenes::::find($request->get("id_examen"));
 
-        return response()->json($exam->get() , 200);
+        return response()->json($exam , 200);
     }
 }
